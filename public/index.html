@@ -28,16 +28,34 @@ html{font-size:var(--fs)}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);line-height:1.45}
 button,input,select,textarea{font:inherit;color:inherit}
 :focus-visible{outline:3px solid var(--signal);outline-offset:2px}
-.top{background:var(--navy);color:var(--navy-ink);padding:12px 16px}
-.top .row{max-width:980px;margin:0 auto;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+/* Ficha: foto a la izquierda y opciones a la derecha, ajustado al alto de la ventana */
+.side{display:flex;flex-direction:column;gap:10px;min-width:0}
+textarea.note{min-height:38px}
+@media (min-width:860px){
+  main.wide{max-width:1280px}
+  section[data-view="clasificar"]:not(.hidden){display:flex;flex-direction:column;height:calc(100dvh - var(--chrome,130px) - 32px);min-height:520px}
+  section[data-view="clasificar"] .progress{margin-bottom:10px;flex:none}
+  .split{flex:1;min-height:0;grid-template-columns:minmax(0,1.15fr) minmax(400px,1fr);gap:16px;padding:12px}
+  .split .photo{height:100%;min-height:0}
+  .split .photo img{height:100%}
+  .split .side{overflow-y:auto;min-height:0;padding-right:2px}
+  .split .item-name{font-size:1.7rem}
+  .split .cats{grid-template-columns:1fr 1fr;gap:6px}
+  .split .cat{min-height:38px;padding:6px 10px}
+  .split .nav-row{margin-top:6px}
+}
+@media (min-width:860px) and (min-height:900px){ .split .cat{min-height:50px;font-size:1.05rem} .split .side{gap:14px} .split .item-name{font-size:2rem} }
+@media (min-width:860px) and (max-height:800px){ .split .item-name{font-size:1.4rem} .split .cat{min-height:34px;padding:4px 10px} .split .side{gap:7px} textarea.note{min-height:34px} }
+.top{background:var(--navy);color:var(--navy-ink);padding:8px 16px}
+.top .row{max-width:1280px;margin:0 auto;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 .top h1{font-family:var(--f-display);font-weight:700;font-size:1.5rem;letter-spacing:.02em;margin:0;flex:1;min-width:200px}
 .top small{display:block;font-family:var(--f-body);font-weight:400;font-size:.85rem;opacity:.85;letter-spacing:0}
 .tbtn{background:transparent;border:1px solid currentColor;color:inherit;border-radius:var(--radius);padding:4px 10px;cursor:pointer;font-size:.9rem}
 nav.tabs{background:var(--surface);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
-nav.tabs .row{max-width:980px;margin:0 auto;display:flex;overflow-x:auto;padding:0 8px}
-nav.tabs button{background:none;border:0;border-bottom:3px solid transparent;padding:12px 14px;cursor:pointer;font-family:var(--f-display);font-weight:600;font-size:1.1rem;color:var(--muted);white-space:nowrap}
+nav.tabs .row{max-width:1280px;margin:0 auto;display:flex;overflow-x:auto;padding:0 8px}
+nav.tabs button{background:none;border:0;border-bottom:3px solid transparent;padding:9px 14px;cursor:pointer;font-family:var(--f-display);font-weight:600;font-size:1.1rem;color:var(--muted);white-space:nowrap}
 nav.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--signal)}
-main{max-width:980px;margin:0 auto;padding:16px}
+main{max-width:1280px;margin:0 auto;padding:16px}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px}
 h2{font-family:var(--f-display);font-weight:700;font-size:1.4rem;margin:0 0 8px}
 h3{font-family:var(--f-display);font-weight:600;font-size:1.15rem;margin:0 0 4px}
@@ -148,23 +166,22 @@ tr.ko td{background:color-mix(in srgb, var(--ko) 7%, transparent)}
 <section data-view="clasificar" class="hidden">
   <div class="progress"><span class="mono" id="progTxt"></span><div class="bar"><span id="progBar"></span></div>
     <label class="flag"><input type="checkbox" id="onlyPend"> Saltar a pendientes</label></div>
-  <div class="panel card">
-    <div class="item-head">
-      <span class="mono muted" id="cId"></span>
-      <span id="cState"></span>
-    </div>
+  <div class="panel card split">
     <button class="photo" id="cPhoto" aria-label="Ampliar foto"><img id="cImg" alt=""></button>
-    <p class="item-name" id="cName"></p>
-    <div class="meta" id="cMeta"></div>
-    <div class="cats" id="cCats" role="group" aria-label="Categorías"></div>
-    <div class="grid2">
-      <label class="flag"><input type="checkbox" id="cDoubt"> Tengo dudas con este artículo</label>
-    </div>
-    <label class="fld">Nota (opcional): por qué esta categoría, o qué otra dudabas<textarea id="cNote" placeholder="Ej.: también podría ser Incendio Urbano porque…"></textarea></label>
-    <div class="nav-row">
-      <button class="btn" id="cPrev">← Anterior</button>
-      <span class="muted" style="font-size:.85rem">Teclas: A–M categoría · ← → moverse</span>
-      <button class="btn primary" id="cNext">Siguiente →</button>
+    <div class="side">
+      <div class="item-head">
+        <span class="mono muted" id="cId"></span>
+        <span id="cState"></span>
+      </div>
+      <p class="item-name" id="cName"></p>
+      <div class="meta" id="cMeta"></div>
+      <div class="cats" id="cCats" role="group" aria-label="Categorías"></div>
+      <textarea class="note" id="cNote" rows="1" aria-label="Nota opcional" placeholder="Nota opcional: por qué esta categoría o cuál otra dudabas"></textarea>
+      <div class="nav-row">
+        <button class="btn" id="cPrev">← Anterior</button>
+        <label class="flag"><input type="checkbox" id="cDoubt"> Tengo dudas</label>
+        <button class="btn primary" id="cNext">Siguiente →</button>
+      </div>
     </div>
   </div>
 </section>
@@ -286,12 +303,17 @@ $("#btnTheme").onclick = () => {
 $("#btnFont").onclick = () => {
   const cur = getComputedStyle(document.documentElement).getPropertyValue("--fs").trim();
   const nx = cur==="1rem" ? "1.15rem" : cur==="1.15rem" ? "1.3rem" : "1rem";
-  document.documentElement.style.setProperty("--fs", nx); try{ localStorage.setItem("clasif-fs", nx); }catch(e){}
+  document.documentElement.style.setProperty("--fs", nx); setChrome(); try{ localStorage.setItem("clasif-fs", nx); }catch(e){}
   toast("Tamaño de letra: " + ({"1rem":"normal","1.15rem":"grande","1.3rem":"muy grande"}[nx]));
 };
 
+/* Alto disponible para la ficha */
+function setChrome(){ document.documentElement.style.setProperty("--chrome", ($(".top").offsetHeight + $("nav.tabs").offsetHeight) + "px"); }
+addEventListener("resize", setChrome); setChrome();
+
 /* Pestañas */
 function show(tab){
+  $("main").classList.toggle("wide", tab==="clasificar"); setChrome();
   document.querySelectorAll("[data-view]").forEach(v => v.classList.toggle("hidden", v.dataset.view!==tab));
   document.querySelectorAll("[data-tab]").forEach(b => b.setAttribute("aria-selected", b.dataset.tab===tab));
   if(tab==="clasificar") renderCard();
