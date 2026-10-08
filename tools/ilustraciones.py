@@ -339,6 +339,63 @@ A[177] = ("Detector multigás", f'''
 <circle cx="300" cy="350" r="34" fill="{DG}" {S}/>
 <rect x="250" y="410" width="100" height="22" rx="6" fill="{R}"/>''')
 
+# ---------- HERRAMIENTAS Y FERRETERÍA ----------
+A[178] = ("Martillo", f'''
+<path d="M180 500 L380 200" stroke="#9c6b3c" stroke-width="34" stroke-linecap="round"/>
+<path d="M300 130 l170 110 l-35 55 l-170 -110 Z" fill="{G}" {S}/>
+<path d="M300 130 q-60 -30 -100 10 l60 40" fill="{G}" {S}/>
+<path d="M180 500 L230 425" stroke="{K}" stroke-width="40" stroke-linecap="round"/>''')
+A[179] = ("Juego de destornilladores", ''.join(f'''
+<rect x="{x}" y="300" width="56" height="190" rx="22" fill="{c}" {S}/>
+<rect x="{x+21}" y="{120+o}" width="14" height="{185-o}" fill="{LG}" {S}/>
+<path d="M{x+18} {120+o} h20 l-4 -20 h-12 Z" fill="{G}"/>''' for x,c,o in [(130,R,0),(220,Y,30),(310,B,10),(400,O,50)]))
+A[180] = ("Alicates", f'''
+<path d="M300 300 L190 520" stroke="{R}" stroke-width="38" stroke-linecap="round"/>
+<path d="M300 300 L410 520" stroke="{R}" stroke-width="38" stroke-linecap="round"/>
+<path d="M300 300 L250 120 L285 110 L315 290 Z" fill="{G}" {S}/>
+<path d="M300 300 L350 120 L315 110 L285 290 Z" fill="{G}" {S}/>
+<circle cx="300" cy="300" r="22" fill="{DG}" {S}/>''')
+A[181] = ("Llave inglesa", f'''
+<path d="M150 470 L400 220" stroke="{G}" stroke-width="44" stroke-linecap="round"/>
+<path d="M380 170 l90 -60 l40 40 l-40 30 l20 30 l-50 40 l-30 -30 l-40 30 Z" fill="{G}" {S}/>
+<circle cx="350" cy="270" r="14" fill="{DG}"/>
+<circle cx="170" cy="450" r="14" fill="{DG}"/>''')
+A[182] = ("Sierra de arco para metal", f'''
+<path d="M140 220 H470 V300" fill="none" stroke="{B}" stroke-width="22" stroke-linejoin="round"/>
+<path d="M140 220 V320" stroke="{B}" stroke-width="22" stroke-linecap="round"/>
+<path d="M140 310 H470" stroke="{LG}" stroke-width="12"/>
+<path d="M150 318 {''.join(f'l8 10 l8 -10 ' for _ in range(20))}" fill="none" stroke="{K}" stroke-width="3"/>
+<path d="M470 300 v20 h20 l30 140 h-80 l20 -140" fill="{K}" {S}/>''')
+A[183] = ("Taladro atornillador inalámbrico", f'''
+<path d="M120 200 h300 q40 0 40 40 v40 q0 40 -40 40 h-300 Z" fill="{O}" {S}/>
+<rect x="460" y="245" width="60" height="30" fill="{DG}" {S}/>
+<rect x="520" y="252" width="50" height="16" fill="{LG}" {S}/>
+<path d="M260 320 l-30 150 h100 l20 -150" fill="{K}" {S}/>
+<rect x="190" y="460" width="190" height="60" rx="10" fill="{K}" {S}/>
+<rect x="310" y="330" width="22" height="40" rx="6" fill="{R}"/>''')
+A[184] = ("Cinta métrica", f'''
+<rect x="140" y="170" width="260" height="260" rx="50" fill="{Y}" {S}/>
+<circle cx="270" cy="300" r="70" fill="{K}"/>
+<rect x="400" y="380" width="160" height="40" fill="{Y}" {S}/>
+{''.join(f'<path d="M{x} 380 v{14 if i%2 else 22}" stroke="{K}" stroke-width="3"/>' for i,x in enumerate(range(410,560,12)))}
+<rect x="550" y="370" width="14" height="60" fill="{G}"/>''')
+A[185] = ("Caja de herramientas", f'''
+<rect x="90" y="250" width="420" height="230" rx="14" fill="{R}" {S}/>
+<path d="M90 320 h420" stroke="{K}" stroke-width="6"/>
+<path d="M230 250 v-70 h140 v70" fill="none" stroke="{K}" stroke-width="22" stroke-linejoin="round"/>
+<rect x="270" y="300" width="60" height="40" rx="6" fill="{LG}" {S}/>''')
+A[186] = ("Nivel de burbuja", f'''
+<rect x="60" y="250" width="480" height="100" rx="12" fill="{Y}" {S}/>
+<rect x="250" y="270" width="100" height="60" rx="10" fill="#bfe6a8" {S}/>
+<ellipse cx="300" cy="300" rx="16" ry="12" fill="{W}"/>
+<path d="M285 270 v60 M315 270 v60" stroke="{K}" stroke-width="3"/>
+<rect x="100" y="285" width="40" height="30" rx="6" fill="#bfe6a8" {S}/>''')
+A[187] = ("Cúter", f'''
+<path d="M110 360 L420 220 L450 270 L150 410 Z" fill="{Y}" {S}/>
+<path d="M420 220 L540 170 L470 265 Z" fill="{LG}" {S}/>
+<path d="M200 345 l120 -55" stroke="{K}" stroke-width="10" stroke-linecap="round"/>
+<rect x="250" y="300" width="30" height="20" rx="4" fill="{K}" transform="rotate(-24 265 310)"/>''')
+
 def svg(body):
     return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600">
 <rect width="600" height="600" fill="#eef1f5"/>{body}

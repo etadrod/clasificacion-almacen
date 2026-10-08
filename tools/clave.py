@@ -46,3 +46,5 @@ for i in range(158,168): K[i]=[EXT]
 K[165]=[EXT,HER]
 for i in range(168,178): K[i]=[IU]
 K[168]=[IU,HER]; K[169]=[IU,HER]; K[170]=[IU,HER]; K[171]=[IU,EXT]; K[172]=[IU,EXT]; K[173]=[IU,RT]; K[176]=[IU,HER]; K[177]=[IU,SEG]
+# Herramientas y ferretería (ilustraciones añadidas)
+for i in range(178,188): K[i]=[HER]

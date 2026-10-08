@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600">
+<rect width="600" height="600" fill="#eef1f5"/>
+<path d="M140 220 H470 V300" fill="none" stroke="#1f5fa8" stroke-width="22" stroke-linejoin="round"/>
+<path d="M140 220 V320" stroke="#1f5fa8" stroke-width="22" stroke-linecap="round"/>
+<path d="M140 310 H470" stroke="#c5ccd6" stroke-width="12"/>
+<path d="M150 318 l8 10 l8 -10 l8 10 l8 -10 l8 10 l8 -10 l8 10 l8 -10 l8 10 l8 -10 l8 10 l8 -10 l8 10 l8 -10 l8 10 l8 -10 l8 10 l8 -10 l8 10 l8 -10 l8 10 l8 -10 l8 10 l8 -10 l8 10 l8 -10 l8 10 l8 -10 l8 10 l8 -10 l8 10 l8 -10 l8 10 l8 -10 l8 10 l8 -10 l8 10 l8 -10 l8 10 l8 -10 " fill="none" stroke="#22252b" stroke-width="3"/>
+<path d="M470 300 v20 h20 l30 140 h-80 l20 -140" fill="#22252b" stroke="#22252b" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="584" y="586" font-family="Arial" font-size="18" fill="#8a93a0" text-anchor="end">Imagen ilustrativa</text></svg>

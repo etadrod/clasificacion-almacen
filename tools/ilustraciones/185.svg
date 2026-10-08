@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600">
+<rect width="600" height="600" fill="#eef1f5"/>
+<rect x="90" y="250" width="420" height="230" rx="14" fill="#d4342b" stroke="#22252b" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M90 320 h420" stroke="#22252b" stroke-width="6"/>
+<path d="M230 250 v-70 h140 v70" fill="none" stroke="#22252b" stroke-width="22" stroke-linejoin="round"/>
+<rect x="270" y="300" width="60" height="40" rx="6" fill="#c5ccd6" stroke="#22252b" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="584" y="586" font-family="Arial" font-size="18" fill="#8a93a0" text-anchor="end">Imagen ilustrativa</text></svg>
