@@ -41,3 +41,8 @@ for i in range(134,146): K[i]=[RA]
 K[134]=[RA,EPI]; K[139]=[RA,EPI]; K[140]=[RA,EPI]; K[141]=[RA,EPI]; K[143]=[RA,EPI]
 for i in range(146,158): K[i]=[TR]
 K[153]=[TR,SEN]
+# Artículos añadidos con imagen ilustrativa (categorías con menos material)
+for i in range(158,168): K[i]=[EXT]
+K[165]=[EXT,HER]
+for i in range(168,178): K[i]=[IU]
+K[168]=[IU,HER]; K[169]=[IU,HER]; K[170]=[IU,HER]; K[171]=[IU,EXT]; K[172]=[IU,EXT]; K[173]=[IU,RT]; K[176]=[IU,HER]; K[177]=[IU,SEG]

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600">
+<rect width="600" height="600" fill="#eef1f5"/><rect x="210" y="170" width="180" height="340" rx="60" fill="#d4342b" stroke="#22252b" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="240" y="270" width="120" height="130" rx="8" fill="#ffffff"/>
+<text x="300" y="350" font-family="Arial" font-weight="700" font-size="40" fill="#22252b" text-anchor="middle">ABC</text>
+<rect x="270" y="120" width="60" height="55" fill="#3b4048" stroke="#22252b" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M260 120 h120 l-10 -25 h-90 Z" fill="#22252b"/>
+<circle cx="300" cy="150" r="12" fill="#c5ccd6"/><path d="M330 150 q100 10 110 130" fill="none" stroke="#22252b" stroke-width="14"/><path d="M430 270 l20 40 l-30 5 Z" fill="#22252b"/>
+<text x="584" y="586" font-family="Arial" font-size="18" fill="#8a93a0" text-anchor="end">Imagen ilustrativa</text></svg>

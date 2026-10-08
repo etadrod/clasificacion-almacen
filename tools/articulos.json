@@ -1133,5 +1133,165 @@
 "m": "",
 "s": "",
 "ilus": 1
+},
+{
+"id": 158,
+"n": "Extintor de polvo ABC",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 159,
+"n": "Extintor de CO2",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 160,
+"n": "Manguera de 45 mm enrollada",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 161,
+"n": "Manguera de 70 mm",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 162,
+"n": "Lanza de caudal variable",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 163,
+"n": "Bifurcación",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 164,
+"n": "Llave de racores",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 165,
+"n": "Hidrante y llave de hidrante",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 166,
+"n": "Lanza de espuma",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 167,
+"n": "Bidón de espumógeno",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 168,
+"n": "Hacha de bombero",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 169,
+"n": "Barra de entrada forzada (Halligan)",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 170,
+"n": "Gancho de techo",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 171,
+"n": "Ventilador de presión positiva",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 172,
+"n": "Cámara térmica",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 173,
+"n": "Escalera de ganchos",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 174,
+"n": "Cortina portátil antihumo",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 175,
+"n": "Abrepuertas hidráulico",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 176,
+"n": "Ariete de entrada forzada",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 177,
+"n": "Detector multigás",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
 }
 ]

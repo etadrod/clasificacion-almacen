@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600">
+<rect width="600" height="600" fill="#eef1f5"/>
+<path d="M160 170 h280 v320 q0 20 -20 20 h-240 q-20 0 -20 -20 Z" fill="#f2b705" stroke="#22252b" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="190" y="120" width="70" height="50" rx="6" fill="#22252b"/>
+<path d="M330 170 v-50 h80 v50" fill="none" stroke="#22252b" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="190" y="260" width="220" height="120" rx="8" fill="#ffffff"/>
+<text x="300" y="310" font-family="Arial" font-weight="700" font-size="34" fill="#22252b" text-anchor="middle">ESPUMA</text>
+<text x="300" y="352" font-family="Arial" font-weight="700" font-size="28" fill="#22252b" text-anchor="middle">AFFF 3%</text>
+<text x="584" y="586" font-family="Arial" font-size="18" fill="#8a93a0" text-anchor="end">Imagen ilustrativa</text></svg>

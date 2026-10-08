@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600">
+<rect width="600" height="600" fill="#eef1f5"/>
+<path d="M120 470 L400 190" stroke="#7d8590" stroke-width="40" stroke-linecap="round"/>
+<path d="M400 190 m-70 0 a90 90 0 1 1 90 90 l-30 -40 a45 45 0 1 0 -45 -45 Z" fill="#7d8590" stroke="#22252b" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="140" cy="450" r="16" fill="#22252b"/>
+<text x="584" y="586" font-family="Arial" font-size="18" fill="#8a93a0" text-anchor="end">Imagen ilustrativa</text></svg>

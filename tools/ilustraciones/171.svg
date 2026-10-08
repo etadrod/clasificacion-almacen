@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600">
+<rect width="600" height="600" fill="#eef1f5"/>
+<circle cx="300" cy="270" r="190" fill="#3b4048" stroke="#22252b" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="300" cy="270" r="160" fill="none" stroke="#c5ccd6" stroke-width="6"/>
+<path d="M300 270 q40 -110 0 -140 q-40 30 0 140" fill="#7d8590" transform="rotate(0 300 270)"/><path d="M300 270 q40 -110 0 -140 q-40 30 0 140" fill="#7d8590" transform="rotate(60 300 270)"/><path d="M300 270 q40 -110 0 -140 q-40 30 0 140" fill="#7d8590" transform="rotate(120 300 270)"/><path d="M300 270 q40 -110 0 -140 q-40 30 0 140" fill="#7d8590" transform="rotate(180 300 270)"/><path d="M300 270 q40 -110 0 -140 q-40 30 0 140" fill="#7d8590" transform="rotate(240 300 270)"/><path d="M300 270 q40 -110 0 -140 q-40 30 0 140" fill="#7d8590" transform="rotate(300 300 270)"/>
+<circle cx="300" cy="270" r="26" fill="#d4342b" stroke="#22252b" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M150 450 l-30 70 h360 l-30 -70" fill="none" stroke="#22252b" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="584" y="586" font-family="Arial" font-size="18" fill="#8a93a0" text-anchor="end">Imagen ilustrativa</text></svg>

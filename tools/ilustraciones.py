@@ -227,6 +227,118 @@ A[157] = ("Mástil telescópico de antena", f'''
 <rect x="293" y="80" width="14" height="80" fill="{LG}" {S}/>
 <path d="M300 80 V30 M250 70 L300 40 L350 70" stroke="{K}" stroke-width="8" fill="none" stroke-linecap="round"/>''')
 
+# ---------- EXTINCIÓN DE INCENDIOS ----------
+def ext(col, label, horn=False):
+    h = f'<path d="M330 150 q90 0 110 120 l40 30 l-20 25 l-50 -30" fill="{K}" {S}/>' if horn else f'<path d="M330 150 q100 10 110 130" fill="none" stroke="{K}" stroke-width="14"/><path d="M430 270 l20 40 l-30 5 Z" fill="{K}"/>'
+    return f'''<rect x="210" y="170" width="180" height="340" rx="60" fill="{col}" {S}/>
+<rect x="240" y="270" width="120" height="130" rx="8" fill="{W}"/>
+<text x="300" y="350" font-family="Arial" font-weight="700" font-size="40" fill="{K}" text-anchor="middle">{label}</text>
+<rect x="270" y="120" width="60" height="55" fill="{DG}" {S}/>
+<path d="M260 120 h120 l-10 -25 h-90 Z" fill="{K}"/>
+<circle cx="300" cy="150" r="12" fill="{LG}"/>{h}'''
+A[158] = ("Extintor de polvo ABC", ext(R,"ABC"))
+A[159] = ("Extintor de CO2", ext(R,"CO2",True))
+A[160] = ("Manguera de 45 mm enrollada", f'''
+<circle cx="300" cy="300" r="190" fill="{R}" {S}/>
+{''.join(f'<circle cx="300" cy="300" r="{r}" fill="none" stroke="#a52520" stroke-width="5"/>' for r in range(60,190,26))}
+<circle cx="300" cy="300" r="50" fill="{LG}" {S}/>
+<rect x="470" y="270" width="70" height="60" rx="8" fill="{LG}" {S}/>''')
+A[161] = ("Manguera de 70 mm", f'''
+<path d="M90 470 C90 300 500 380 480 200 C470 120 380 110 360 150" fill="none" stroke="{K}" stroke-width="58" stroke-linecap="round"/>
+<path d="M90 470 C90 300 500 380 480 200 C470 120 380 110 360 150" fill="none" stroke="{Y}" stroke-width="46" stroke-linecap="round"/>
+<rect x="45" y="460" width="90" height="60" rx="8" fill="{LG}" {S}/>
+<rect x="320" y="110" width="80" height="60" rx="8" fill="{LG}" {S} transform="rotate(-30 360 140)"/>''')
+A[162] = ("Lanza de caudal variable", f'''
+<rect x="110" y="270" width="230" height="70" rx="14" fill="{LG}" {S}/>
+<path d="M340 260 h120 l40 -20 v130 l-40 -20 h-120 Z" fill="{R}" {S}/>
+<path d="M500 240 l60 -40 M500 305 h70 M500 370 l60 40" stroke="{B}" stroke-width="8" stroke-dasharray="10 10"/>
+<path d="M190 340 v100 h60 v-100" fill="{K}" {S}/>
+<path d="M240 270 l40 -60 h40" fill="none" stroke="{K}" stroke-width="14" stroke-linecap="round"/>
+<rect x="60" y="275" width="60" height="60" rx="6" fill="{G}" {S}/>''')
+A[163] = ("Bifurcación", f'''
+<rect x="90" y="270" width="140" height="70" rx="10" fill="{LG}" {S}/>
+<path d="M230 260 h80 l120 -100 l40 45 l-100 85 v20 l100 85 l-40 45 l-120 -100 h-80 Z" fill="{LG}" {S}/>
+<rect x="420" y="130" width="70" height="60" rx="8" fill="{G}" {S} transform="rotate(-40 455 160)"/>
+<rect x="420" y="410" width="70" height="60" rx="8" fill="{G}" {S} transform="rotate(40 455 440)"/>
+<circle cx="350" cy="190" r="22" fill="{R}" {S}/><circle cx="350" cy="410" r="22" fill="{R}" {S}/>''')
+A[164] = ("Llave de racores", f'''
+<path d="M120 470 L400 190" stroke="{G}" stroke-width="40" stroke-linecap="round"/>
+<path d="M400 190 m-70 0 a90 90 0 1 1 90 90 l-30 -40 a45 45 0 1 0 -45 -45 Z" fill="{G}" {S}/>
+<circle cx="140" cy="450" r="16" fill="{K}"/>''')
+A[165] = ("Hidrante y llave de hidrante", f'''
+<rect x="200" y="200" width="160" height="290" rx="20" fill="{R}" {S}/>
+<path d="M190 200 q90 -110 180 0 Z" fill="{R}" {S}/>
+<rect x="150" y="300" width="60" height="60" rx="8" fill="{LG}" {S}/><rect x="350" y="300" width="60" height="60" rx="8" fill="{LG}" {S}/>
+<rect x="170" y="480" width="220" height="30" rx="6" fill="{DG}" {S}/>
+<path d="M440 140 h120 M500 140 v220" stroke="{K}" stroke-width="20" stroke-linecap="round"/>''')
+A[166] = ("Lanza de espuma", f'''
+<path d="M120 260 h200 l200 -40 v160 l-200 -40 h-200 Z" fill="{LG}" {S}/>
+<rect x="60" y="270" width="70" height="60" rx="8" fill="{G}" {S}/>
+<circle cx="250" cy="300" r="14" fill="{K}"/>
+<path d="M250 314 C240 400 300 420 330 480" fill="none" stroke="{K}" stroke-width="8"/>
+<g fill="{W}" stroke="{G}" stroke-width="3"><circle cx="545" cy="250" r="16"/><circle cx="560" cy="300" r="20"/><circle cx="545" cy="350" r="16"/></g>''')
+A[167] = ("Bidón de espumógeno", f'''
+<path d="M160 170 h280 v320 q0 20 -20 20 h-240 q-20 0 -20 -20 Z" fill="{Y}" {S}/>
+<rect x="190" y="120" width="70" height="50" rx="6" fill="{K}"/>
+<path d="M330 170 v-50 h80 v50" fill="none" {S}/>
+<rect x="190" y="260" width="220" height="120" rx="8" fill="{W}"/>
+<text x="300" y="310" font-family="Arial" font-weight="700" font-size="34" fill="{K}" text-anchor="middle">ESPUMA</text>
+<text x="300" y="352" font-family="Arial" font-weight="700" font-size="28" fill="{K}" text-anchor="middle">AFFF 3%</text>''')
+# ---------- INCENDIO URBANO ----------
+A[168] = ("Hacha de bombero", f'''
+<path d="M140 500 L410 150" stroke="#9c6b3c" stroke-width="30" stroke-linecap="round"/>
+<path d="M360 110 l120 -20 q40 60 -10 130 l-110 -40 Z" fill="{LG}" {S}/>
+<path d="M370 150 l-80 -50 l20 -30 Z" fill="{G}" {S}/>
+<path d="M140 500 L190 435" stroke="{R}" stroke-width="34" stroke-linecap="round"/>''')
+A[169] = ("Barra de entrada forzada (Halligan)", f'''
+<path d="M140 460 L450 150" stroke="{G}" stroke-width="30" stroke-linecap="round"/>
+<path d="M450 150 l60 -10 l-10 30 Z M430 130 l20 -70 l25 15 Z" fill="{G}" {S}/>
+<path d="M140 460 l-40 30 q-20 10 -10 -15 l30 -45" fill="{G}" {S}/>
+<path d="M120 470 l-30 -60" stroke="{K}" stroke-width="6"/>''')
+A[170] = ("Gancho de techo", f'''
+<path d="M120 520 L420 120" stroke="{Y}" stroke-width="22" stroke-linecap="round"/>
+<path d="M420 120 l40 -50 M420 120 q60 10 50 70 l-30 -10" fill="none" stroke="{G}" stroke-width="18" stroke-linecap="round"/>
+<path d="M120 520 L170 455" stroke="{K}" stroke-width="28" stroke-linecap="round"/>''')
+A[171] = ("Ventilador de presión positiva", f'''
+<circle cx="300" cy="270" r="190" fill="{DG}" {S}/>
+<circle cx="300" cy="270" r="160" fill="none" stroke="{LG}" stroke-width="6"/>
+{''.join(f'<path d="M300 270 q{40} -110 {0} -140 q-40 30 0 140" fill="{G}" transform="rotate({a} 300 270)"/>' for a in range(0,360,60))}
+<circle cx="300" cy="270" r="26" fill="{R}" {S}/>
+<path d="M150 450 l-30 70 h360 l-30 -70" fill="none" {S}/>''')
+A[172] = ("Cámara térmica", f'''
+<rect x="140" y="160" width="320" height="230" rx="34" fill="{Y}" {S}/>
+<rect x="180" y="195" width="240" height="160" rx="10" fill="{K}"/>
+<rect x="190" y="205" width="220" height="140" rx="6" fill="#4a1d6b"/>
+<ellipse cx="300" cy="275" rx="45" ry="55" fill="#f0a020"/><ellipse cx="300" cy="275" rx="22" ry="28" fill="#fff07a"/>
+<rect x="260" y="390" width="80" height="120" rx="16" fill="{K}" {S}/>''')
+A[173] = ("Escalera de ganchos", f'''
+<path d="M230 520 V140 M370 520 V140" stroke="#9c6b3c" stroke-width="22" stroke-linecap="round"/>
+{''.join(f'<path d="M230 {y} H370" stroke="#9c6b3c" stroke-width="12"/>' for y in range(180,520,50))}
+<path d="M230 140 q0 -70 70 -70 q60 0 40 60" fill="none" stroke="{G}" stroke-width="16" stroke-linecap="round"/>''')
+A[174] = ("Cortina portátil antihumo", f'''
+<rect x="170" y="90" width="260" height="420" fill="none" stroke="{K}" stroke-width="12"/>
+<rect x="182" y="102" width="236" height="300" fill="{R}"/>
+<path d="M182 402 h236" stroke="{K}" stroke-width="6"/>
+<text x="300" y="270" font-family="Arial" font-weight="700" font-size="34" fill="{W}" text-anchor="middle">HUMO</text>
+<path d="M200 470 q50 -40 100 0 t100 0" fill="none" stroke="{G}" stroke-width="10"/>''')
+A[175] = ("Abrepuertas hidráulico", f'''
+<rect x="110" y="250" width="260" height="90" rx="16" fill="{Y}" {S}/>
+<path d="M370 260 h120 l40 15 v40 l-40 15 h-120 Z" fill="{G}" {S}/>
+<path d="M490 260 l60 -20 v110 l-60 -20" fill="{LG}" {S}/>
+<rect x="150" y="200" width="70" height="50" rx="8" fill="{K}"/>
+<path d="M180 200 V140 h120" fill="none" stroke="{K}" stroke-width="12"/>''')
+A[176] = ("Ariete de entrada forzada", f'''
+<rect x="100" y="240" width="400" height="120" rx="20" fill="{DG}" {S}/>
+<rect x="480" y="225" width="60" height="150" rx="10" fill="{K}"/>
+<path d="M200 240 v-60 h80 v60 M330 240 v-60 h80 v60" fill="none" stroke="{Y}" stroke-width="16"/>''')
+A[177] = ("Detector multigás", f'''
+<rect x="200" y="130" width="200" height="340" rx="30" fill="{Y}" {S}/>
+<rect x="230" y="170" width="140" height="110" rx="8" fill="{K}"/>
+<text x="300" y="215" font-family="Arial" font-weight="700" font-size="24" fill="#38c172" text-anchor="middle">O2 20,9</text>
+<text x="300" y="255" font-family="Arial" font-weight="700" font-size="24" fill="#38c172" text-anchor="middle">CO 0</text>
+<circle cx="300" cy="350" r="34" fill="{DG}" {S}/>
+<rect x="250" y="410" width="100" height="22" rx="6" fill="{R}"/>''')
+
 def svg(body):
     return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600">
 <rect width="600" height="600" fill="#eef1f5"/>{body}
