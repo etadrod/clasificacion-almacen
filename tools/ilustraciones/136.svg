@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600">
+<rect width="600" height="600" fill="#eef1f5"/>
+<rect x="70" y="250" width="420" height="100" rx="50" fill="#d4342b" stroke="#22252b" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="280" y="315" font-family="Arial" font-weight="700" font-size="40" fill="#ffffff" text-anchor="middle">RESCUE</text>
+<path d="M490 300 q60 0 70 -60 q5 -60 -40 -80" fill="none" stroke="#f2b705" stroke-width="10"/>
+<path d="M70 285 l-30 -10 v50 l30 -10" fill="#22252b"/>
+<text x="584" y="586" font-family="Arial" font-size="18" fill="#8a93a0" text-anchor="end">Imagen ilustrativa</text></svg>

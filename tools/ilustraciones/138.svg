@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600">
+<rect width="600" height="600" fill="#eef1f5"/>
+<rect x="170" y="180" width="200" height="290" rx="30" fill="#d4342b" stroke="#22252b" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="170" y="230" width="200" height="30" fill="#c5ccd6"/>
+<ellipse cx="270" cy="180" rx="100" ry="25" fill="#3b4048" stroke="#22252b" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M270 180 C300 60 450 80 430 200 S520 360 470 470" fill="none" stroke="#f2b705" stroke-width="12"/>
+<circle cx="470" cy="480" r="16" fill="none" stroke="#f2b705" stroke-width="10"/>
+<text x="584" y="586" font-family="Arial" font-size="18" fill="#8a93a0" text-anchor="end">Imagen ilustrativa</text></svg>

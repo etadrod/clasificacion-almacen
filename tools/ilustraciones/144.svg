@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600">
+<rect width="600" height="600" fill="#eef1f5"/>
+<path d="M80 520 L450 150" stroke="#f2b705" stroke-width="24" stroke-linecap="round"/>
+<path d="M80 520 L180 420" stroke="#22252b" stroke-width="28" stroke-linecap="round"/>
+<path d="M450 150 q60 -60 100 -10 q30 50 -40 80" fill="none" stroke="#7d8590" stroke-width="18" stroke-linecap="round"/>
+<text x="584" y="586" font-family="Arial" font-size="18" fill="#8a93a0" text-anchor="end">Imagen ilustrativa</text></svg>

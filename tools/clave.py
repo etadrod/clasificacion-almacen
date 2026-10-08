@@ -33,3 +33,11 @@ K[106]=[IF,EPI]; K[107]=[IU,EPI]                 # maniquíes uniformados
 for i in range(108,121): K[i]=[SEG]
 K[110]=[SEG,EPI]; K[113]=[SEG,HER]; K[114]=[SEG,EPI]
 K[121]=[SEN,SEG]                                 # cono de linterna
+# Artículos añadidos con imagen ilustrativa (categorías sin material en el inventario)
+RA="Rescate Acuático"; TR="Transmisiones"
+for i in range(122,134): K[i]=[AT]
+K[130]=[AT,HER]; K[131]=[AT,RT]
+for i in range(134,146): K[i]=[RA]
+K[134]=[RA,EPI]; K[139]=[RA,EPI]; K[140]=[RA,EPI]; K[141]=[RA,EPI]; K[143]=[RA,EPI]
+for i in range(146,158): K[i]=[TR]
+K[153]=[TR,SEN]

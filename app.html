@@ -208,7 +208,7 @@ tr.ko td{background:color-mix(in srgb, var(--ko) 7%, transparent)}
 <!-- CATEGORÍAS -->
 <section data-view="categorias" class="hidden">
   <h2>Las 13 categorías</h2>
-  <p class="muted" style="margin-top:0">Orientación de lo que entra en cada una. Los ejemplos no son una lista cerrada.</p>
+  <p class="muted" style="margin-top:0">Lee qué incluye cada una antes de empezar.</p>
   <div class="gloss" id="gloss"></div>
   <div class="nav-row" style="margin-top:14px;justify-content:flex-end"><button class="btn primary" id="btnToClass">Empezar a clasificar →</button></div>
 </section>
@@ -254,22 +254,22 @@ const POOL = /*ITEMS*/[];
 const N_ITEMS = 30;
 
 const CATS = [
-  ["Accidente de Tráfico","Material específico de siniestros viales: excarcelación (separadores, cizallas, cilindros), estabilización de vehículos, protección de airbags, control de fluidos."],
-  ["EPIs","Equipos que protegen a la persona que interviene: cabeza, ojos y cara, manos, pies, cuerpo, alta visibilidad, protección biológica o química de un solo uso."],
-  ["Extinción de Incendios","Medios para aplicar agentes extintores y apoyo genérico a la extinción: extintores, mangueras, lanzas, bifurcaciones, equipos de respiración autónoma."],
-  ["Herramientas y ferretería","Herramienta y material de uso general no ligado a una especialidad: tornos, llaves, cerraduras, tornillería, cortadores, iluminación portátil, material de taller y oficina."],
-  ["Incendio Forestal","Material propio del ataque en el monte: herramienta manual forestal (pulaski, batefuegos, rastrillo, azada), mochilas extintoras, refugio ignífugo, equipamiento específico de combatiente forestal."],
-  ["Incendio Urbano","Material propio de la intervención en edificios e incendios estructurales: equipamiento de bombero urbano, herramientas de entrada forzada, material específico de interior."],
-  ["Logística","Apoyo y sostenimiento del dispositivo: alimentación y raciones, agua e hidratación, albergue, higiene, transporte, almacenaje y material de formación o simulación."],
-  ["Rescate Tierra","Rescate en altura, en pozos o en terreno: cuerdas, arneses, anclajes, mosquetones, poleas, descensores, bloqueadores, camillas y material de trabajos verticales."],
-  ["Rescate Acuático","Rescate en agua: chalecos salvavidas, aros y tubos de rescate, cuerdas flotantes, trajes de agua, aletas."],
-  ["Sanitario","Atención sanitaria y soporte vital: botiquines, oxigenoterapia, desfibriladores, inmovilización (collarines, férulas), material de RCP y maniquíes de prácticas sanitarias."],
-  ["Seguridad","Material de vigilancia y seguridad: detección (detectores de metales, espejos de inspección), defensa y contención, control de accesos y equipamiento policial o de seguridad privada."],
-  ["Señalización","Balizamiento y aviso: conos, cintas de balizar, carteles, señales, luces de señalización y elementos para delimitar zonas."],
-  ["Transmisiones","Comunicaciones: emisoras y walkies, baterías y cargadores de radio, antenas, telefonía, megafonía."]
+  ["Accidente de Tráfico","Material específico de siniestros viales: excarcelación, sujeción e inmovilización de vehículos."],
+  ["EPIs","Equipos de protección individual de la persona que interviene."],
+  ["Extinción de Incendios","Medios para aplicar agentes extintores y apoyo genérico a la extinción de incendios."],
+  ["Herramientas y ferretería","Utensilios y material de uso general no ligado a una especialidad."],
+  ["Incendio Forestal","Material propio del ataque en el monte: herramienta manual forestal y equipamiento de bombero forestal (no EPI)."],
+  ["Incendio Urbano","Material propio de la intervención en edificios e incendios estructurales: equipamiento de bombero urbano (no EPI)."],
+  ["Logística","Apoyo y sostenimiento del dispositivo o de los recursos y medios intervinientes: alimentación y raciones, hidratación, albergue, higiene, transporte, almacenaje y material de formación o simulación."],
+  ["Rescate Tierra","Material específico para realizar operaciones de rescate y/o salvamento en altura, pozos o el propio terreno."],
+  ["Rescate Acuático","Material específico para realizar operaciones de rescate y/o salvamento en el mar o propio del entorno acuático."],
+  ["Sanitario","Material para la atención sanitaria y soporte vital de las víctimas en cualquier entorno."],
+  ["Seguridad","Material de vigilancia y seguridad: detección, defensa y contención, control de accesos y equipamiento policial o de seguridad privada."],
+  ["Señalización","Material para el balizamiento y/o aviso de situaciones de emergencia, así como para la delimitación de zonas."],
+  ["Transmisiones","Sistemas o elementos específicos para la comunicación y coordinación de recursos y medios en una emergencia."]
 ];
 const KEYS = "ABCDEFGHIJKLM";
-const STORE = "clasif-almacen-v2";
+const STORE = "clasif-almacen-v3";
 
 let S = {alumno:"",grupo:"",sel:null,a:{},d:{},n:{},i:0,fin:null};
 try{ const raw = localStorage.getItem(STORE); if(raw) S = Object.assign(S, JSON.parse(raw)); }catch(e){}
@@ -353,7 +353,7 @@ function renderCard(){
   $("#cName").textContent = it.n;
   $("#cImg").src = `img/${it.id}.jpg`; $("#cImg").alt = `Foto del artículo: ${it.n}`;
   const nx = ITEMS[S.i+1]; if(nx){ const pre=new Image(); pre.src=`img/${nx.id}.jpg`; }
-  $("#cMeta").innerHTML = meta(it) || '<span class="muted">Sin más datos en el inventario</span>';
+  $("#cMeta").innerHTML = meta(it);
   const cur = S.a[it.id];
   $("#cState").innerHTML = locked() ? (isOk(it) ? `<span class="pill ok">✓ Correcto</span>` : `<span class="pill" style="color:var(--ko)">✗ Solución: ${esc(it.k[0])}</span>`)
     : cur ? `<span class="pill sel">${esc(cur)}</span>` : `<span class="pill">Pendiente</span>`;

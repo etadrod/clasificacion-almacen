@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600">
+<rect width="600" height="600" fill="#eef1f5"/>
+<path d="M50 420 h500 l-30 80 h-440 Z" fill="#3b4048" stroke="#22252b" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<g transform="translate(130 300) scale(0.7)">
+<rect x="-12" y="-150" width="22" height="130" rx="10" fill="#22252b"/>
+<rect x="-60" y="-30" width="140" height="280" rx="22" fill="#22252b" stroke="#22252b" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="-40" y="0" width="100" height="60" rx="6" fill="#7fb2e5"/>
+<g fill="#7d8590"><rect x="-38" y="90" width="26" height="20" rx="4"/><rect x="-3" y="90" width="26" height="20" rx="4"/><rect x="32" y="90" width="26" height="20" rx="4"/>
+<rect x="-38" y="125" width="26" height="20" rx="4"/><rect x="-3" y="125" width="26" height="20" rx="4"/><rect x="32" y="125" width="26" height="20" rx="4"/>
+<rect x="-38" y="160" width="26" height="20" rx="4"/><rect x="-3" y="160" width="26" height="20" rx="4"/><rect x="32" y="160" width="26" height="20" rx="4"/></g>
+<rect x="-72" y="40" width="14" height="60" rx="4" fill="#f06a1d"/></g><g transform="translate(250 300) scale(0.7)">
+<rect x="-12" y="-150" width="22" height="130" rx="10" fill="#22252b"/>
+<rect x="-60" y="-30" width="140" height="280" rx="22" fill="#22252b" stroke="#22252b" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="-40" y="0" width="100" height="60" rx="6" fill="#7fb2e5"/>
+<g fill="#7d8590"><rect x="-38" y="90" width="26" height="20" rx="4"/><rect x="-3" y="90" width="26" height="20" rx="4"/><rect x="32" y="90" width="26" height="20" rx="4"/>
+<rect x="-38" y="125" width="26" height="20" rx="4"/><rect x="-3" y="125" width="26" height="20" rx="4"/><rect x="32" y="125" width="26" height="20" rx="4"/>
+<rect x="-38" y="160" width="26" height="20" rx="4"/><rect x="-3" y="160" width="26" height="20" rx="4"/><rect x="32" y="160" width="26" height="20" rx="4"/></g>
+<rect x="-72" y="40" width="14" height="60" rx="4" fill="#f06a1d"/></g><g transform="translate(370 300) scale(0.7)">
+<rect x="-12" y="-150" width="22" height="130" rx="10" fill="#22252b"/>
+<rect x="-60" y="-30" width="140" height="280" rx="22" fill="#22252b" stroke="#22252b" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="-40" y="0" width="100" height="60" rx="6" fill="#7fb2e5"/>
+<g fill="#7d8590"><rect x="-38" y="90" width="26" height="20" rx="4"/><rect x="-3" y="90" width="26" height="20" rx="4"/><rect x="32" y="90" width="26" height="20" rx="4"/>
+<rect x="-38" y="125" width="26" height="20" rx="4"/><rect x="-3" y="125" width="26" height="20" rx="4"/><rect x="32" y="125" width="26" height="20" rx="4"/>
+<rect x="-38" y="160" width="26" height="20" rx="4"/><rect x="-3" y="160" width="26" height="20" rx="4"/><rect x="32" y="160" width="26" height="20" rx="4"/></g>
+<rect x="-72" y="40" width="14" height="60" rx="4" fill="#f06a1d"/></g><g transform="translate(490 300) scale(0.7)">
+<rect x="-12" y="-150" width="22" height="130" rx="10" fill="#22252b"/>
+<rect x="-60" y="-30" width="140" height="280" rx="22" fill="#22252b" stroke="#22252b" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="-40" y="0" width="100" height="60" rx="6" fill="#7fb2e5"/>
+<g fill="#7d8590"><rect x="-38" y="90" width="26" height="20" rx="4"/><rect x="-3" y="90" width="26" height="20" rx="4"/><rect x="32" y="90" width="26" height="20" rx="4"/>
+<rect x="-38" y="125" width="26" height="20" rx="4"/><rect x="-3" y="125" width="26" height="20" rx="4"/><rect x="32" y="125" width="26" height="20" rx="4"/>
+<rect x="-38" y="160" width="26" height="20" rx="4"/><rect x="-3" y="160" width="26" height="20" rx="4"/><rect x="32" y="160" width="26" height="20" rx="4"/></g>
+<rect x="-72" y="40" width="14" height="60" rx="4" fill="#f06a1d"/></g>
+<g fill="#38c172"><circle cx="130" cy="470" r="9"/><circle cx="250" cy="470" r="9"/><circle cx="370" cy="470" r="9"/></g><circle cx="490" cy="470" r="9" fill="#d4342b"/>
+<text x="584" y="586" font-family="Arial" font-size="18" fill="#8a93a0" text-anchor="end">Imagen ilustrativa</text></svg>

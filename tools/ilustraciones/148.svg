@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600">
+<rect width="600" height="600" fill="#eef1f5"/>
+<rect x="60" y="230" width="380" height="180" rx="14" fill="#7d8590" stroke="#22252b" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="90" y="260" width="200" height="60" rx="6" fill="#7fb2e5"/>
+<circle cx="370" cy="290" r="36" fill="#3b4048" stroke="#22252b" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<g fill="#3b4048"><rect x="90" y="340" width="40" height="22" rx="4"/><rect x="145" y="340" width="40" height="22" rx="4"/><rect x="200" y="340" width="40" height="22" rx="4"/><rect x="255" y="340" width="40" height="22" rx="4"/></g>
+<ellipse cx="510" cy="450" rx="60" ry="18" fill="#22252b"/>
+<path d="M510 450 V300" stroke="#22252b" stroke-width="10"/>
+<rect x="485" y="250" width="50" height="70" rx="22" fill="#22252b"/>
+<text x="584" y="586" font-family="Arial" font-size="18" fill="#8a93a0" text-anchor="end">Imagen ilustrativa</text></svg>

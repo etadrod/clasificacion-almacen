@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600">
+<rect width="600" height="600" fill="#eef1f5"/>
+<rect x="200" y="200" width="200" height="320" rx="30" fill="#3b4048" stroke="#22252b" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="330" y="60" width="50" height="160" rx="20" fill="#22252b" stroke="#22252b" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="230" y="230" width="140" height="90" rx="6" fill="#7fb2e5"/>
+<g fill="#7d8590"><rect x="232" y="345" width="36" height="24" rx="5"/><rect x="282" y="345" width="36" height="24" rx="5"/><rect x="332" y="345" width="36" height="24" rx="5"/>
+<rect x="232" y="385" width="36" height="24" rx="5"/><rect x="282" y="385" width="36" height="24" rx="5"/><rect x="332" y="385" width="36" height="24" rx="5"/>
+<rect x="232" y="425" width="36" height="24" rx="5"/><rect x="282" y="425" width="36" height="24" rx="5"/><rect x="332" y="425" width="36" height="24" rx="5"/></g>
+<text x="584" y="586" font-family="Arial" font-size="18" fill="#8a93a0" text-anchor="end">Imagen ilustrativa</text></svg>

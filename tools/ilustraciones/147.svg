@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600">
+<rect width="600" height="600" fill="#eef1f5"/>
+<rect x="80" y="220" width="360" height="130" rx="16" fill="#3b4048" stroke="#22252b" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="110" y="250" width="160" height="50" rx="6" fill="#7fb2e5"/>
+<circle cx="380" cy="285" r="30" fill="#7d8590" stroke="#22252b" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<g fill="#7d8590"><rect x="110" y="310" width="34" height="18" rx="4"/><rect x="155" y="310" width="34" height="18" rx="4"/><rect x="200" y="310" width="34" height="18" rx="4"/></g>
+<rect x="450" y="300" width="70" height="120" rx="20" fill="#22252b" stroke="#22252b" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M440 330 C400 420 470 440 450 470 C430 500 480 510 485 420" fill="none" stroke="#22252b" stroke-width="6"/>
+<text x="584" y="586" font-family="Arial" font-size="18" fill="#8a93a0" text-anchor="end">Imagen ilustrativa</text></svg>

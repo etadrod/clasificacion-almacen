@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600">
+<rect width="600" height="600" fill="#eef1f5"/>
+<path d="M90 430 V370 H190 V310 H290 V250 H390 V190 H490 V430 Z" fill="#f2b705" stroke="#22252b" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M90 430 l30 30 H520 l-30 -30" fill="#c99500" stroke="#22252b" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M190 370 H490 M290 310 H490 M390 250 H490" stroke="#c99500" stroke-width="4"/>
+<rect x="110" y="390" width="60" height="16" fill="#22252b" rx="3"/>
+<text x="584" y="586" font-family="Arial" font-size="18" fill="#8a93a0" text-anchor="end">Imagen ilustrativa</text></svg>

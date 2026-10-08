@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600">
+<rect width="600" height="600" fill="#eef1f5"/>
+<path d="M80 300 Q80 200 300 200 Q520 200 540 300 Q520 400 300 400 Q80 400 80 300 Z" fill="#f06a1d" stroke="#22252b" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M170 210 v-40 h80 v40 M350 210 v-40 h80 v40 M170 390 v40 h80 v-40 M350 390 v40 h80 v-40" fill="none" stroke="#22252b" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M540 300 q50 0 40 -80" fill="none" stroke="#f2b705" stroke-width="10"/>
+<text x="584" y="586" font-family="Arial" font-size="18" fill="#8a93a0" text-anchor="end">Imagen ilustrativa</text></svg>

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600">
+<rect width="600" height="600" fill="#eef1f5"/>
+<circle cx="300" cy="300" r="190" fill="none" stroke="#22252b" stroke-width="34"/>
+<rect x="290" y="300" width="20" height="190" fill="#22252b"/>
+<circle cx="300" cy="300" r="120" fill="#d4342b" stroke="#22252b" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="300" y="315" font-family="Arial" font-weight="700" font-size="42" fill="#ffffff" text-anchor="middle">AIRBAG</text>
+<path d="M180 300 H105 M420 300 H495" stroke="#f2b705" stroke-width="22"/>
+<path d="M300 180 V110" stroke="#f2b705" stroke-width="22"/>
+<text x="584" y="586" font-family="Arial" font-size="18" fill="#8a93a0" text-anchor="end">Imagen ilustrativa</text></svg>

@@ -845,5 +845,293 @@
 "d": "Naranja",
 "m": "",
 "s": "15"
+},
+{
+"id": 122,
+"n": "Separador hidráulico",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 123,
+"n": "Cizalla hidráulica",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 124,
+"n": "Cilindro de rescate",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 125,
+"n": "Herramienta combinada",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 126,
+"n": "Grupo motobomba hidráulico",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 127,
+"n": "Calzos escalonados de estabilización",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 128,
+"n": "Puntales de estabilización",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 129,
+"n": "Protector de airbag",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 130,
+"n": "Cortacinturones y rompecristales",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 131,
+"n": "Cojines neumáticos de elevación",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 132,
+"n": "Sierra para vidrio laminado",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 133,
+"n": "Protectores de aristas cortantes",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 134,
+"n": "Chaleco salvavidas",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 135,
+"n": "Aro salvavidas",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 136,
+"n": "Tubo de rescate",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 137,
+"n": "Boya torpedo",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 138,
+"n": "Bolsa de lanzamiento con cuerda",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 139,
+"n": "Aletas",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 140,
+"n": "Traje de neopreno",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 141,
+"n": "Casco de rescate acuático",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 142,
+"n": "Tabla de rescate",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 143,
+"n": "Máscara y tubo de buceo",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 144,
+"n": "Pértiga de rescate",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 145,
+"n": "Camilla de rescate acuático flotante",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 146,
+"n": "Equipo portátil de radio (walkie)",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 147,
+"n": "Emisora móvil de vehículo",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 148,
+"n": "Emisora base",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 149,
+"n": "Antena con base magnética",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 150,
+"n": "Batería de radio portátil",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 151,
+"n": "Cargador múltiple de equipos portátiles",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 152,
+"n": "Teléfono vía satélite",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 153,
+"n": "Megáfono",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 154,
+"n": "Micrófono altavoz de mano",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 155,
+"n": "Repetidor portátil",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 156,
+"n": "Kit auricular con pulsador (PTT)",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
+},
+{
+"id": 157,
+"n": "Mástil telescópico de antena",
+"d": "",
+"m": "",
+"s": "",
+"ilus": 1
 }
 ]
