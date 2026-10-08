@@ -93,13 +93,16 @@ tr.pend td:first-child{box-shadow:inset 3px 0 var(--signal)}
 .toast.on{opacity:1}
 #printable{display:none}
 @media (max-width:560px){.photo img{height:240px}.item-name{font-size:1.6rem}.cats{grid-template-columns:1fr 1fr}.cat{font-size:.92rem}}
-@media print{
-  body{background:#fff;color:#000}
-  .top,nav.tabs,main,.toast{display:none!important}
-  #printable{display:block;font-family:var(--f-body);font-size:10pt}
-  #printable table{font-size:9pt} #printable th{background:#eee;position:static}
-}
+.score{display:flex;gap:16px;align-items:center;flex-wrap:wrap;padding:14px 16px;border-radius:var(--radius);background:var(--sunk)}
+.score .big{font-family:var(--f-display);font-weight:700;font-size:3rem;line-height:1}
+.res-ok{color:var(--ok);font-weight:700}
+.res-ko{color:var(--ko);font-weight:700}
+tr.ko td{background:color-mix(in srgb, var(--ko) 7%, transparent)}
+.alt{font-size:.85rem;color:var(--muted)}
+.cat:disabled{cursor:default;opacity:.8}
 </style>
+<script src="vendor/jspdf.umd.min.js" defer></script>
+<script src="vendor/jspdf.plugin.autotable.min.js" defer></script>
 </head>
 <body>
 <header class="top"><div class="row">
@@ -113,7 +116,7 @@ tr.pend td:first-child{box-shadow:inset 3px 0 var(--signal)}
   <button role="tab" data-tab="clasificar" aria-selected="false">2. Clasificar</button>
   <button role="tab" data-tab="revisar" aria-selected="false">3. Revisar</button>
   <button role="tab" data-tab="categorias" aria-selected="false">Categorías</button>
-  <button role="tab" data-tab="entregar" aria-selected="false">4. Entregar</button>
+  <button role="tab" data-tab="entregar" aria-selected="false">4. Corregir y entregar</button>
 </div></nav>
 
 <main>
@@ -121,8 +124,8 @@ tr.pend td:first-child{box-shadow:inset 3px 0 var(--signal)}
 <section data-view="inicio" class="stack">
   <div class="panel stack">
     <h2>Antes de empezar</h2>
-    <p style="margin:0">Vas a asignar <b id="nItems"></b> artículos del inventario del almacén a una de las <b>13 categorías</b> de material. Es el paso previo al registro completo de cada artículo: un almacén solo funciona si todo el mundo clasifica igual.</p>
-    <div class="hint"><b>Criterio:</b> clasifica cada artículo por su <b>función principal</b> en una intervención. Si dudas entre dos categorías (por ejemplo, un EPI que solo se usa en una especialidad), elige una, marca «Tengo dudas» y escribe en la nota por qué. Las notas cuentan en la puesta en común.</div>
+    <p style="margin:0">Se te han asignado <b id="nItems"></b> artículos elegidos al azar del inventario del almacén. Tienes que asignar cada uno a una de las <b>13 categorías</b> de material. Es el paso previo al registro completo de cada artículo: un almacén solo funciona si todo el mundo clasifica igual.</p>
+    <div class="hint"><b>Criterio:</b> clasifica cada artículo por su <b>función principal</b> en una intervención. Si dudas entre dos categorías, elige una, marca «Tengo dudas» y escribe en la nota por qué. Algunos artículos admiten más de una categoría válida.</div>
     <div class="grid2">
       <label class="fld">Nombre y apellidos<input type="text" id="alumno" autocomplete="name" placeholder="Escribe tu nombre"></label>
       <label class="fld">Grupo<input type="text" id="grupo" placeholder="Ej.: 1.º CEP"></label>
@@ -134,9 +137,9 @@ tr.pend td:first-child{box-shadow:inset 3px 0 var(--signal)}
     <h3>Cómo se trabaja</h3>
     <ol style="margin:6px 0 0;padding-left:20px">
       <li><b>Clasificar:</b> ficha a ficha. Pulsa la categoría o su tecla (A–M). Con ← y → cambias de artículo.</li>
-      <li><b>Revisar:</b> todo el listado en una tabla, con filtros, para corregir y comprobar que no queda nada pendiente.</li>
+      <li><b>Revisar:</b> tus artículos en una tabla para corregir y comprobar que no queda nada pendiente.</li>
       <li><b>Categorías:</b> qué incluye cada una. Consúltala siempre que dudes.</li>
-      <li><b>Entregar:</b> descarga el archivo (.csv, se abre con Excel) y súbelo a la tarea del aula virtual. También puedes imprimirlo o guardarlo en PDF.</li>
+      <li><b>Corregir y entregar:</b> cuando lo tengas todo, pulsa «Finalizar y corregir». Verás la solución de cada artículo y tu nota. A partir de ahí ya no se puede cambiar nada. Descarga el <b>informe PDF</b> y súbelo a la tarea de Moodle.</li>
     </ol>
   </div>
 </section>
@@ -171,11 +174,11 @@ tr.pend td:first-child{box-shadow:inset 3px 0 var(--signal)}
   <div class="panel">
     <h2>Revisar clasificación</h2>
     <div class="filters">
-      <input type="text" id="fText" placeholder="Buscar artículo, modelo o ubicación" aria-label="Buscar">
+      <input type="text" id="fText" placeholder="Buscar artículo o modelo" aria-label="Buscar">
       <select id="fCat" aria-label="Filtrar por categoría"></select>
     </div>
     <div class="tbl-wrap"><table>
-      <thead><tr><th>ID</th><th>Foto</th><th>Artículo</th><th>Marca / modelo · Ubicación</th><th>Categoría</th><th>Duda</th></tr></thead>
+      <thead><tr><th>ID</th><th>Foto</th><th>Artículo</th><th>Marca / modelo</th><th>Categoría</th><th>Duda</th></tr></thead>
       <tbody id="rBody"></tbody>
     </table></div>
     <p class="muted" id="rCount" style="margin:8px 0 0"></p>
@@ -189,66 +192,90 @@ tr.pend td:first-child{box-shadow:inset 3px 0 var(--signal)}
   <div class="gloss" id="gloss"></div>
 </section>
 
-<!-- ENTREGAR -->
+<!-- CORREGIR Y ENTREGAR -->
 <section data-view="entregar" class="hidden stack">
-  <div class="panel stack">
-    <h2>Entregar</h2>
+  <div class="panel stack" id="ePre">
+    <h2>Finalizar y corregir</h2>
     <div id="eStatus"></div>
-    <h3>Reparto por categorías</h3>
-    <div class="sum" id="eSum"></div>
+    <div class="panel" style="background:var(--sunk);border:0">
+      <h3>Autoevaluación antes de finalizar</h3>
+      <ul style="margin:6px 0 0;padding-left:20px">
+        <li>¿Has dejado algún artículo sin categoría?</li>
+        <li>¿Has clasificado igual los artículos parecidos?</li>
+        <li>¿Has justificado en la nota los artículos marcados con duda?</li>
+      </ul>
+    </div>
     <div class="nav-row">
-      <button class="btn warn" id="btnReset">Borrar y empezar de cero</button>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn" id="btnPrint">Imprimir / PDF</button>
-        <button class="btn primary" id="btnCsv">Descargar (.csv para Excel)</button>
-      </div>
+      <span class="muted">Al finalizar se muestra la solución y ya no podrás cambiar tus respuestas.</span>
+      <button class="btn primary" id="btnFinish">Finalizar y corregir</button>
     </div>
   </div>
-  <div class="panel">
-    <h3>Autoevaluación antes de entregar</h3>
-    <ul style="margin:6px 0 0;padding-left:20px">
-      <li>¿Has dejado algún artículo sin categoría?</li>
-      <li>¿Has clasificado igual los artículos repetidos (mismo nombre en distintas ubicaciones)?</li>
-      <li>¿Alguna categoría ha quedado vacía o con casi todo? Piensa si es coherente con lo que hay en el almacén.</li>
-      <li>¿Has justificado en la nota los artículos marcados con duda?</li>
-    </ul>
+  <div class="panel stack hidden" id="ePost">
+    <h2>Resultado</h2>
+    <div class="score" id="eScore"></div>
+    <div class="nav-row">
+      <span class="muted">Descarga el informe y súbelo a la tarea de Moodle.</span>
+      <button class="btn primary" id="btnPdf">Descargar informe PDF</button>
+    </div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>ID</th><th>Foto</th><th>Artículo</th><th>Tu respuesta</th><th>Solución</th><th>Resultado</th></tr></thead>
+      <tbody id="eBody"></tbody>
+    </table></div>
   </div>
 </section>
 </main>
 
-<div id="printable"></div>
 <div class="lb hidden" id="lb" role="dialog" aria-label="Foto ampliada"><img id="lbImg" alt=""></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
-const ITEMS = [{"id":1,"n":"Chaleco","d":"","m":"Modelo Único","u":"A.1.1","s":"37","img":1},{"id":2,"n":"Chaleco reversible","d":"","m":"Único","u":"A.1.1","s":"9","img":1},{"id":3,"n":"Chaleco","d":"","m":"Único","u":"A.1.2","s":"2","img":1},{"id":4,"n":"Chaleco","d":"","m":"Único","u":"A.1.2","s":"4","img":1},{"id":5,"n":"Chaleco","d":"","m":"Único","u":"A.1.2","s":"2","img":1},{"id":6,"n":"Chaleco","d":"","m":"Único","u":"A.1.2","s":"2","img":1},{"id":7,"n":"Chaleco","d":"","m":"Único","u":"A.1.2","s":"2","img":1},{"id":8,"n":"Camisetas","d":"","m":"Sin talla","u":"A.1.2","s":"5","img":1},{"id":9,"n":"Botas","d":"","m":"Talla 41","u":"A.1.7","s":"1","img":1},{"id":10,"n":"Botas","d":"","m":"Talla 43","u":"A.1.7","s":"1","img":1},{"id":11,"n":"Botas","d":"","m":"Talla 37","u":"A.1.7","s":"1","img":1},{"id":12,"n":"Pantalón de trabajo","d":"","m":"Talla L","u":"A.1.3","s":"8","img":1},{"id":13,"n":"Cinturón","d":"","m":"Único","u":"A.1.3","s":"8","img":1},{"id":14,"n":"Guantes","d":"","m":"Único","u":"A.1.4","s":"6","img":1},{"id":15,"n":"Linterna","d":"","m":"Único","u":"A.1.4","s":"15","img":1},{"id":16,"n":"Cascos","d":"","m":"Único","u":"A.2.1; A.2.2;A.2.3","s":"23","img":1},{"id":17,"n":"Casco","d":"","m":"Único","u":"A.2.3;A2.4","s":"7","img":1},{"id":18,"n":"Casco","d":"","m":"Único","u":"A.2.4; A.2.5","s":"6","img":1},{"id":19,"n":"Cascos","d":"","m":"Único","u":"A.2.5","s":"1","img":1},{"id":20,"n":"Casco","d":"","m":"Único","u":"A.2.5","s":"2","img":1},{"id":21,"n":"Casco","d":"","m":"Único","u":"A.2.5","s":"3","img":1},{"id":22,"n":"Mochila de extinción","d":"","m":"Único","u":"A.1.5","s":"1","img":1},{"id":23,"n":"Camell back","d":"","m":"Único","u":"A.1.5","s":"1","img":1},{"id":24,"n":"Rastrillo","d":"","m":"Único","u":"Derecha A.1","s":"1","img":1},{"id":25,"n":"Pulaski","d":"","m":"Único","u":"Derecha A.1","s":"2","img":1},{"id":26,"n":"Bellota","d":"","m":"Unico","u":"Derecha A.1","s":"1","img":1},{"id":27,"n":"Gorgui","d":"","m":"Único","u":"Derecha A.1","s":"1","img":1},{"id":28,"n":"Sacho","d":"","m":"Único","u":"Derecha A.1","s":"1","img":1},{"id":29,"n":"Pico","d":"","m":"Único","u":"Derecha A.1","s":"1","img":1},{"id":30,"n":"Traje de bomberos LPGC","d":"","m":"(Sin talla)","u":"A.4","s":"4","img":1},{"id":31,"n":"Traje de bomberos","d":"","m":"Talla L","u":"A.4","s":"9","img":1},{"id":32,"n":"Traje Ciclo","d":"","m":"Talla M","u":"A.5","s":"12","img":1},{"id":33,"n":"Traje","d":"","m":"Talla L","u":"A.5","s":"15","img":1},{"id":34,"n":"Traje","d":"","m":"Único","u":"A.5","s":"6","img":1},{"id":35,"n":"Traje","d":"","m":"Traje ciclo color naranja talla XXL","u":"A.5","s":"4","img":1},{"id":36,"n":"Casco","d":"","m":"Único","u":"A.7.1","s":"3","img":1},{"id":37,"n":"Material de Cuerda","d":"","m":"Único","u":"A.7.1","s":"1","img":1},{"id":38,"n":"Gafas","d":"","m":"Único","u":"A.7.2","s":"17","img":1},{"id":39,"n":"Gafas","d":"","m":"Único","u":"A.7.2","s":"12","img":1},{"id":40,"n":"Caja de oxígeno","d":"","m":"Único","u":"A.7.2","s":"1","img":1},{"id":41,"n":"Viseras","d":"","m":"Único","u":"A.7.2","s":"5","img":1},{"id":42,"n":"Equipo de emergencias","d":"","m":"Único","u":"A.7.4","s":"1","img":1},{"id":43,"n":"Corta papeles","d":"","m":"Único","u":"A.7.4","s":"1","img":1},{"id":44,"n":"Maniquí","d":"","m":"Único","u":"A.7.4","s":"2","img":1},{"id":45,"n":"Manta térmica","d":"","m":"Único","u":"A.7.4","s":"1","img":1},{"id":46,"n":"Desfibrilador","d":"","m":"Único","u":"A.7.4","s":"1","img":1},{"id":47,"n":"Señales","d":"","m":"Único","u":"A.7.4","s":"1","img":1},{"id":48,"n":"Kit para una reanimación","d":"","m":"Único","u":"A.7.4","s":"2","img":1},{"id":49,"n":"Collarín","d":"","m":"Talla P","u":"A.7.3","s":"1","img":1},{"id":50,"n":"Collarín","d":"","m":"Talla S","u":"A.7.3","s":"1","img":1},{"id":51,"n":"Collarín","d":"","m":"Talla XS","u":"A.7.3","s":"1","img":1},{"id":52,"n":"Collarín","d":"","m":"Talla M","u":"A.7.3","s":"1","img":1},{"id":53,"n":"Collarín","d":"","m":"Talla XL","u":"A.7.3","s":"1","img":1},{"id":54,"n":"Collarín","d":"","m":"Talla L","u":"A.7.3","s":"1","img":1},{"id":55,"n":"Material sanitario","d":"","m":"Único","u":"A.7.2","s":"1","img":1},{"id":56,"n":"Pantalla para cascos","d":"","m":"Único","u":"A.7.2","s":"5","img":1},{"id":57,"n":"Cascos integrados","d":"","m":"Único","u":"A.7.2","s":"5","img":1},{"id":58,"n":"Raciones de comida","d":"","m":"Único","u":"A.6.3","s":"2","img":1},{"id":59,"n":"Ración comida ligera","d":"","m":"Único","u":"A.6.3","s":"1","img":1},{"id":60,"n":"Ración comida fría","d":"","m":"Único","u":"A.6.3","s":"2","img":1},{"id":61,"n":"Guantes","d":"","m":"Único","u":"A.6.3","s":"7","img":1},{"id":62,"n":"Comida supervivencia","d":"","m":"Único","u":"A.6.3","s":"2","img":1},{"id":63,"n":"Caja de higiene","d":"","m":"Único","u":"A.6.3","s":"1","img":1},{"id":64,"n":"Gafas","d":"","m":"Único","u":"A.7.2","s":"3","img":1},{"id":65,"n":"Cuerda rescate","d":"","m":"Único","u":"A.7.1","s":"1","img":1},{"id":66,"n":"Material ambulancia","d":"","m":"Único","u":"A.7.4","s":"1","img":1},{"id":67,"n":"Cartel","d":"","m":"Único","u":"Encima de A.7.1","s":"2","img":1},{"id":68,"n":"Epis de un solo uso","d":"","m":"Único","u":"A.6.4","s":"24","img":1},{"id":69,"n":"Cartel","d":"","m":"Único","u":"Encima A.7.1","s":"3","img":1},{"id":70,"n":"Epis blancos","d":"","m":"Único","u":"A.6.3","s":"12","img":1},{"id":71,"n":"Arnés rescate","d":"","m":"Único","u":"A.7.1","s":"1","img":1},{"id":72,"n":"Correa cartuchera","d":"","m":"Único","u":"A.7.2","s":"1","img":1},{"id":73,"n":"Cinta","d":"","m":"Único","u":"Encima de A.7.1","s":"3","img":1},{"id":74,"n":"Uniforme militar","d":"","m":"Único","u":"A.6.5","s":"1","img":1},{"id":75,"n":"Cuerda de estribo","d":"","m":"","u":"Derecha centro dos","s":"4","img":1},{"id":76,"n":"Cintas de escalada","d":"","m":"","u":"Derecha centro dos","s":"6","img":1},{"id":77,"n":"Mosquetones pera","d":"","m":"","u":"Derecha centro dos","s":"12","img":1},{"id":78,"n":"Mosquetones de seguridad","d":"","m":"","u":"","s":"8","img":1},{"id":79,"n":"Eslabones","d":"","m":"","u":"Derecha centro dos","s":"5","img":1},{"id":80,"n":"Anticaidas","d":"","m":"","u":"Derecha centro dos","s":"3","img":1},{"id":81,"n":"Croll","d":"","m":"","u":"Derecha centro dos","s":"4","img":1},{"id":82,"n":"Finchas","d":"","m":"22 Kilo Newton 3 amarillas 2 rojas 2 verdes 1 negra","u":"Derecha centro dos","s":"8","img":1},{"id":83,"n":"Protector de cuerda","d":"","m":"","u":"Derecha centro dos","s":"1","img":1},{"id":84,"n":"Conjunto de anclajes","d":"","m":"","u":"Derecha centro dos","s":"10","img":1},{"id":85,"n":"Rescuender","d":"","m":"","u":"Derecho centro dos","s":"1","img":1},{"id":86,"n":"Mosquetón polea","d":"","m":"","u":"Derecha centro dos","s":"1","img":1},{"id":87,"n":"Arnés","d":"","m":"","u":"Derecha centro dos","s":"1","img":1},{"id":88,"n":"Polea 36 Kilo Newton","d":"","m":"","u":"Derecha centro dos","s":"4","img":1},{"id":89,"n":"Tandem 24 Kilo newton","d":"","m":"","u":"Derecha centro dos","s":"1","img":1},{"id":90,"n":"Puños","d":"","m":"","u":"Derecha centro dos","s":"3","img":1},{"id":91,"n":"ID","d":"","m":"","u":"Derecho centro dos","s":"3","img":1},{"id":92,"n":"Poleas 23 Kilo newton","d":"","m":"","u":"Derecho centra dos","s":"3","img":1},{"id":93,"n":"Descendedor en ocho","d":"","m":"","u":"Derecho centro dos","s":"3","img":1},{"id":94,"n":"Enganche linea de vida","d":"","m":"","u":"Derecha centro dos","s":"1","img":1},{"id":95,"n":"Araña rescate en camilla","d":"","m":"","u":"Derecha centro dos","s":"1","img":1},{"id":96,"n":"Polea doble de rescate","d":"","m":"","u":"Derecha centro dos","s":"1","img":1},{"id":97,"n":"Descendedor","d":"","m":"","u":"Derecha centro dos","s":"1","img":1},{"id":98,"n":"Arnés","d":"","m":"","u":"Derecha centro dos","s":"1","img":1},{"id":99,"n":"Eslinga","d":"","m":"","u":"Derecha centro dos","s":"1","img":1},{"id":100,"n":"Dräger rapid air","d":"","m":"Satandard","u":"5.1","s":"5","img":1},{"id":101,"n":"torno de bancada en acero","d":"","m":"","u":"5.2","s":"1","img":1},{"id":102,"n":"Cerradura de seguridad","d":"","m":"","u":"5.2","s":"1","img":1},{"id":103,"n":"Eslinga con estribos","d":"","m":"Irudek","u":"5.2","s":"1","img":1},{"id":104,"n":"Mesa de Simulación","d":"","m":"","u":"Aula Taller","s":"1","img":1},{"id":105,"n":"Pizarras GOM","d":"","m":"","u":"Aula Taller","s":"4","img":1},{"id":106,"n":"Maniquí","d":"","m":"","u":"Aula Taller","s":"1","img":1},{"id":107,"n":"Maniquí","d":"","m":"","u":"Aula Taller","s":"1","img":1},{"id":108,"n":"ESPEJO INSPECCIÓN CONVEXO","d":"","m":"","u":"Dep","s":"1","img":1},{"id":109,"n":"Escudo antidisturbios","d":"","m":"","u":"Dep","s":"2","img":1},{"id":110,"n":"Chaleco anticorte","d":"","m":"","u":"","s":"8","img":1},{"id":111,"n":"Defensa gomaespuma","d":"Roja","m":"","u":"","s":"5","img":1},{"id":112,"n":"Detector de metales","d":"","m":"","u":"","s":"3","img":1},{"id":113,"n":"Linterna","d":"Negra","m":"","u":"","s":"10","img":1},{"id":114,"n":"Casco antidisturbios","d":"Negro + funda","m":"","u":"","s":"5","img":1},{"id":115,"n":"Defensa semirrígida","d":"Negra","m":"","u":"","s":"15","img":1},{"id":116,"n":"Cinto porta objwtos","d":"Negro","m":"","u":"","s":"15","img":1},{"id":117,"n":"Porta grilletes","d":"Negro","m":"","u":"","s":"15","img":1},{"id":118,"n":"Grilletes","d":"Plateados","m":"","u":"","s":"15","img":1},{"id":119,"n":"Porta Defensa","d":"Negro","m":"","u":"","s":"15","img":1},{"id":120,"n":"Porta Linterna","d":"","m":"","u":"","s":"15","img":1},{"id":121,"n":"Cono de Linterna","d":"Naranja","m":"","u":"","s":"15","img":1}];
+const POOL = [{"id":1,"n":"Chaleco","d":"","m":"Modelo Único","s":"37","k":["EPIs","Señalización"]},{"id":2,"n":"Chaleco reversible","d":"","m":"Único","s":"9","k":["EPIs","Señalización"]},{"id":3,"n":"Chaleco","d":"","m":"Único","s":"2","k":["EPIs","Señalización"]},{"id":4,"n":"Chaleco","d":"","m":"Único","s":"4","k":["EPIs","Señalización"]},{"id":5,"n":"Chaleco","d":"","m":"Único","s":"2","k":["EPIs","Señalización"]},{"id":6,"n":"Chaleco","d":"","m":"Único","s":"2","k":["EPIs","Señalización"]},{"id":7,"n":"Chaleco","d":"","m":"Único","s":"2","k":["EPIs","Señalización"]},{"id":8,"n":"Camisetas","d":"","m":"Sin talla","s":"5","k":["EPIs","Logística"]},{"id":9,"n":"Botas","d":"","m":"Talla 41","s":"1","k":["EPIs"]},{"id":10,"n":"Botas","d":"","m":"Talla 43","s":"1","k":["EPIs"]},{"id":11,"n":"Botas","d":"","m":"Talla 37","s":"1","k":["EPIs"]},{"id":12,"n":"Pantalón de trabajo","d":"","m":"Talla L","s":"8","k":["EPIs"]},{"id":13,"n":"Cinturón","d":"","m":"Único","s":"8","k":["EPIs"]},{"id":14,"n":"Guantes","d":"","m":"Único","s":"6","k":["EPIs"]},{"id":15,"n":"Linterna","d":"","m":"Único","s":"15","k":["Herramientas y ferretería","EPIs","Señalización"]},{"id":16,"n":"Cascos","d":"","m":"Único","s":"23","k":["EPIs","Rescate Tierra"]},{"id":17,"n":"Casco","d":"","m":"Único","s":"7","k":["EPIs","Incendio Forestal","Rescate Tierra"]},{"id":18,"n":"Casco","d":"","m":"Único","s":"6","k":["EPIs"]},{"id":19,"n":"Cascos","d":"","m":"Único","s":"1","k":["EPIs","Incendio Forestal"]},{"id":20,"n":"Casco","d":"","m":"Único","s":"2","k":["EPIs","Incendio Forestal"]},{"id":21,"n":"Casco","d":"","m":"Único","s":"3","k":["EPIs","Incendio Urbano"]},{"id":22,"n":"Mochila de extinción","d":"","m":"Único","s":"1","k":["Incendio Forestal","Extinción de Incendios"]},{"id":23,"n":"Camell back","d":"","m":"Único","s":"1","k":["Logística","EPIs","Incendio Forestal"]},{"id":24,"n":"Rastrillo","d":"","m":"Único","s":"1","k":["Incendio Forestal"]},{"id":25,"n":"Pulaski","d":"","m":"Único","s":"2","k":["Incendio Forestal"]},{"id":26,"n":"Bellota","d":"","m":"Unico","s":"1","k":["Incendio Forestal"]},{"id":27,"n":"Gorgui","d":"","m":"Único","s":"1","k":["Incendio Forestal"]},{"id":28,"n":"Sacho","d":"","m":"Único","s":"1","k":["Incendio Forestal"]},{"id":29,"n":"Pico","d":"","m":"Único","s":"1","k":["Incendio Forestal","Herramientas y ferretería"]},{"id":30,"n":"Traje de bomberos LPGC","d":"","m":"(Sin talla)","s":"4","k":["EPIs","Incendio Urbano"]},{"id":31,"n":"Traje de bomberos","d":"","m":"Talla L","s":"9","k":["EPIs","Incendio Urbano"]},{"id":32,"n":"Traje Ciclo","d":"","m":"Talla M","s":"12","k":["EPIs"]},{"id":33,"n":"Traje","d":"","m":"Talla L","s":"15","k":["EPIs"]},{"id":34,"n":"Traje","d":"","m":"Único","s":"6","k":["EPIs"]},{"id":35,"n":"Traje","d":"","m":"Traje ciclo color naranja talla XXL","s":"4","k":["EPIs"]},{"id":36,"n":"Casco","d":"","m":"Único","s":"3","k":["EPIs"]},{"id":37,"n":"Material de Cuerda","d":"","m":"Único","s":"1","k":["Rescate Tierra","EPIs"]},{"id":38,"n":"Gafas","d":"","m":"Único","s":"17","k":["EPIs"]},{"id":39,"n":"Gafas","d":"","m":"Único","s":"12","k":["EPIs"]},{"id":40,"n":"Caja de oxígeno","d":"","m":"Único","s":"1","k":["Sanitario"]},{"id":41,"n":"Viseras","d":"","m":"Único","s":"5","k":["EPIs"]},{"id":42,"n":"Equipo de emergencias","d":"","m":"Único","s":"1","k":["Sanitario"]},{"id":43,"n":"Corta papeles","d":"","m":"Único","s":"1","k":["Herramientas y ferretería","Logística"]},{"id":44,"n":"Maniquí","d":"","m":"Único","s":"2","k":["Sanitario"]},{"id":45,"n":"Manta térmica","d":"","m":"Único","s":"1","k":["Incendio Forestal","EPIs"]},{"id":46,"n":"Desfibrilador","d":"","m":"Único","s":"1","k":["Sanitario"]},{"id":47,"n":"Señales","d":"","m":"Único","s":"1","k":["Señalización"]},{"id":48,"n":"Kit para una reanimación","d":"","m":"Único","s":"2","k":["Sanitario"]},{"id":49,"n":"Collarín","d":"","m":"Talla P","s":"1","k":["Sanitario","Accidente de Tráfico"]},{"id":50,"n":"Collarín","d":"","m":"Talla S","s":"1","k":["Sanitario","Accidente de Tráfico"]},{"id":51,"n":"Collarín","d":"","m":"Talla XS","s":"1","k":["Sanitario","Accidente de Tráfico"]},{"id":52,"n":"Collarín","d":"","m":"Talla M","s":"1","k":["Sanitario","Accidente de Tráfico"]},{"id":53,"n":"Collarín","d":"","m":"Talla XL","s":"1","k":["Sanitario","Accidente de Tráfico"]},{"id":54,"n":"Collarín","d":"","m":"Talla L","s":"1","k":["Sanitario","Accidente de Tráfico"]},{"id":55,"n":"Material sanitario","d":"","m":"Único","s":"1","k":["Sanitario"]},{"id":56,"n":"Pantalla para cascos","d":"","m":"Único","s":"5","k":["EPIs"]},{"id":57,"n":"Cascos integrados","d":"","m":"Único","s":"5","k":["EPIs"]},{"id":58,"n":"Raciones de comida","d":"","m":"Único","s":"2","k":["Logística"]},{"id":59,"n":"Ración comida ligera","d":"","m":"Único","s":"1","k":["Logística"]},{"id":60,"n":"Ración comida fría","d":"","m":"Único","s":"2","k":["Logística"]},{"id":61,"n":"Guantes","d":"","m":"Único","s":"7","k":["EPIs"]},{"id":62,"n":"Comida supervivencia","d":"","m":"Único","s":"2","k":["Logística"]},{"id":63,"n":"Caja de higiene","d":"","m":"Único","s":"1","k":["Logística","Sanitario"]},{"id":64,"n":"Gafas","d":"","m":"Único","s":"3","k":["EPIs"]},{"id":65,"n":"Cuerda rescate","d":"","m":"Único","s":"1","k":["Rescate Tierra"]},{"id":66,"n":"Material ambulancia","d":"","m":"Único","s":"1","k":["Sanitario"]},{"id":67,"n":"Cartel","d":"","m":"Único","s":"2","k":["Señalización"]},{"id":68,"n":"Epis de un solo uso","d":"","m":"Único","s":"24","k":["EPIs"]},{"id":69,"n":"Cartel","d":"","m":"Único","s":"3","k":["Señalización"]},{"id":70,"n":"Epis blancos","d":"","m":"Único","s":"12","k":["EPIs"]},{"id":71,"n":"Arnés rescate","d":"","m":"Único","s":"1","k":["Rescate Tierra"]},{"id":72,"n":"Correa cartuchera","d":"","m":"Único","s":"1","k":["Rescate Tierra","EPIs"]},{"id":73,"n":"Cinta","d":"","m":"Único","s":"3","k":["Señalización"]},{"id":74,"n":"Uniforme militar","d":"","m":"Único","s":"1","k":["EPIs","Logística"]},{"id":75,"n":"Cuerda de estribo","d":"","m":"","s":"4","k":["Rescate Tierra"]},{"id":76,"n":"Cintas de escalada","d":"","m":"","s":"6","k":["Rescate Tierra"]},{"id":77,"n":"Mosquetones pera","d":"","m":"","s":"12","k":["Rescate Tierra"]},{"id":78,"n":"Mosquetones de seguridad","d":"","m":"","s":"8","k":["Rescate Tierra"]},{"id":79,"n":"Eslabones","d":"","m":"","s":"5","k":["Rescate Tierra"]},{"id":80,"n":"Anticaidas","d":"","m":"","s":"3","k":["Rescate Tierra"]},{"id":81,"n":"Croll","d":"","m":"","s":"4","k":["Rescate Tierra"]},{"id":82,"n":"Finchas","d":"","m":"22 Kilo Newton 3 amarillas 2 rojas 2 verdes 1 negra","s":"8","k":["Rescate Tierra"]},{"id":83,"n":"Protector de cuerda","d":"","m":"","s":"1","k":["Rescate Tierra"]},{"id":84,"n":"Conjunto de anclajes","d":"","m":"","s":"10","k":["Rescate Tierra"]},{"id":85,"n":"Rescuender","d":"","m":"","s":"1","k":["Rescate Tierra"]},{"id":86,"n":"Mosquetón polea","d":"","m":"","s":"1","k":["Rescate Tierra"]},{"id":87,"n":"Arnés","d":"","m":"","s":"1","k":["Rescate Tierra"]},{"id":88,"n":"Polea 36 Kilo Newton","d":"","m":"","s":"4","k":["Rescate Tierra"]},{"id":89,"n":"Tandem 24 Kilo newton","d":"","m":"","s":"1","k":["Rescate Tierra"]},{"id":90,"n":"Puños","d":"","m":"","s":"3","k":["Rescate Tierra"]},{"id":91,"n":"ID","d":"","m":"","s":"3","k":["Rescate Tierra"]},{"id":92,"n":"Poleas 23 Kilo newton","d":"","m":"","s":"3","k":["Rescate Tierra"]},{"id":93,"n":"Descendedor en ocho","d":"","m":"","s":"3","k":["Rescate Tierra"]},{"id":94,"n":"Enganche linea de vida","d":"","m":"","s":"1","k":["Rescate Tierra"]},{"id":95,"n":"Araña rescate en camilla","d":"","m":"","s":"1","k":["Rescate Tierra"]},{"id":96,"n":"Polea doble de rescate","d":"","m":"","s":"1","k":["Rescate Tierra"]},{"id":97,"n":"Descendedor","d":"","m":"","s":"1","k":["Rescate Tierra"]},{"id":98,"n":"Arnés","d":"","m":"","s":"1","k":["Rescate Tierra"]},{"id":99,"n":"Eslinga","d":"","m":"","s":"1","k":["Rescate Tierra"]},{"id":100,"n":"Dräger rapid air","d":"","m":"Satandard","s":"5","k":["Extinción de Incendios","EPIs","Incendio Urbano"]},{"id":101,"n":"torno de bancada en acero","d":"","m":"","s":"1","k":["Herramientas y ferretería"]},{"id":102,"n":"Cerradura de seguridad","d":"","m":"","s":"1","k":["Herramientas y ferretería","Seguridad"]},{"id":103,"n":"Eslinga con estribos","d":"","m":"Irudek","s":"1","k":["Rescate Tierra"]},{"id":104,"n":"Mesa de Simulación","d":"","m":"","s":"1","k":["Logística"]},{"id":105,"n":"Pizarras GOM","d":"","m":"","s":"4","k":["Logística"]},{"id":106,"n":"Maniquí","d":"","m":"","s":"1","k":["Incendio Forestal","EPIs"]},{"id":107,"n":"Maniquí","d":"","m":"","s":"1","k":["Incendio Urbano","EPIs"]},{"id":108,"n":"ESPEJO INSPECCIÓN CONVEXO","d":"","m":"","s":"1","k":["Seguridad"]},{"id":109,"n":"Escudo antidisturbios","d":"","m":"","s":"2","k":["Seguridad"]},{"id":110,"n":"Chaleco anticorte","d":"","m":"","s":"8","k":["Seguridad","EPIs"]},{"id":111,"n":"Defensa gomaespuma","d":"Roja","m":"","s":"5","k":["Seguridad"]},{"id":112,"n":"Detector de metales","d":"","m":"","s":"3","k":["Seguridad"]},{"id":113,"n":"Linterna","d":"Negra","m":"","s":"10","k":["Seguridad","Herramientas y ferretería"]},{"id":114,"n":"Casco antidisturbios","d":"Negro + funda","m":"","s":"5","k":["Seguridad","EPIs"]},{"id":115,"n":"Defensa semirrígida","d":"Negra","m":"","s":"15","k":["Seguridad"]},{"id":116,"n":"Cinto porta objwtos","d":"Negro","m":"","s":"15","k":["Seguridad"]},{"id":117,"n":"Porta grilletes","d":"Negro","m":"","s":"15","k":["Seguridad"]},{"id":118,"n":"Grilletes","d":"Plateados","m":"","s":"15","k":["Seguridad"]},{"id":119,"n":"Porta Defensa","d":"Negro","m":"","s":"15","k":["Seguridad"]},{"id":120,"n":"Porta Linterna","d":"","m":"","s":"15","k":["Seguridad"]},{"id":121,"n":"Cono de Linterna","d":"Naranja","m":"","s":"15","k":["Señalización","Seguridad"]}];
+const N_ITEMS = 30;
 
 const CATS = [
   ["Accidente de Tráfico","Material específico de siniestros viales: excarcelación (separadores, cizallas, cilindros), estabilización de vehículos, protección de airbags, control de fluidos."],
   ["EPIs","Equipos que protegen a la persona que interviene: cabeza, ojos y cara, manos, pies, cuerpo, alta visibilidad, protección biológica o química de un solo uso."],
   ["Extinción de Incendios","Medios para aplicar agentes extintores y apoyo genérico a la extinción: extintores, mangueras, lanzas, bifurcaciones, equipos de respiración autónoma."],
-  ["Herramientas y ferretería","Herramienta y material de uso general no ligado a una especialidad: tornos, llaves, cerraduras, tornillería, cortadores, material de taller."],
-  ["Incendio Forestal","Material propio del ataque en el monte: herramienta manual forestal (pulaski, batefuegos, rastrillo, azada), mochilas extintoras, equipamiento específico de combatiente forestal."],
+  ["Herramientas y ferretería","Herramienta y material de uso general no ligado a una especialidad: tornos, llaves, cerraduras, tornillería, cortadores, iluminación portátil, material de taller y oficina."],
+  ["Incendio Forestal","Material propio del ataque en el monte: herramienta manual forestal (pulaski, batefuegos, rastrillo, azada), mochilas extintoras, refugio ignífugo, equipamiento específico de combatiente forestal."],
   ["Incendio Urbano","Material propio de la intervención en edificios e incendios estructurales: equipamiento de bombero urbano, herramientas de entrada forzada, material específico de interior."],
-  ["Logística","Apoyo y sostenimiento del dispositivo: alimentación y raciones, agua, albergue, higiene colectiva, transporte, almacenaje y material de formación o simulación."],
+  ["Logística","Apoyo y sostenimiento del dispositivo: alimentación y raciones, agua e hidratación, albergue, higiene, transporte, almacenaje y material de formación o simulación."],
   ["Rescate Tierra","Rescate en altura, en pozos o en terreno: cuerdas, arneses, anclajes, mosquetones, poleas, descensores, bloqueadores, camillas y material de trabajos verticales."],
   ["Rescate Acuático","Rescate en agua: chalecos salvavidas, aros y tubos de rescate, cuerdas flotantes, trajes de agua, aletas."],
-  ["Sanitario","Atención sanitaria y soporte vital: botiquines, desfibriladores, inmovilización (collarines, férulas), material de RCP y maniquíes de prácticas sanitarias."],
+  ["Sanitario","Atención sanitaria y soporte vital: botiquines, oxigenoterapia, desfibriladores, inmovilización (collarines, férulas), material de RCP y maniquíes de prácticas sanitarias."],
   ["Seguridad","Material de vigilancia y seguridad: detección (detectores de metales, espejos de inspección), defensa y contención, control de accesos y equipamiento policial o de seguridad privada."],
   ["Señalización","Balizamiento y aviso: conos, cintas de balizar, carteles, señales, luces de señalización y elementos para delimitar zonas."],
   ["Transmisiones","Comunicaciones: emisoras y walkies, baterías y cargadores de radio, antenas, telefonía, megafonía."]
 ];
 const KEYS = "ABCDEFGHIJKLM";
-const STORE = "clasif-almacen-v1";
+const STORE = "clasif-almacen-v2";
 
-let S = {alumno:"",grupo:"",a:{},d:{},n:{},i:0};
+let S = {alumno:"",grupo:"",sel:null,a:{},d:{},n:{},i:0,fin:null};
 try{ const raw = localStorage.getItem(STORE); if(raw) S = Object.assign(S, JSON.parse(raw)); }catch(e){}
 function save(){ try{ localStorage.setItem(STORE, JSON.stringify(S)); }catch(e){} }
 
+/* Selección aleatoria equilibrada: reparto por turnos entre las categorías de la solución,
+   para que haya artículos de todas las categorías con material en el inventario. Fija para este alumno/navegador. */
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function pickBalanced(){
+  const groups = CATS.map(c => shuffle(POOL.filter(p => p.k[0]===c[0]).map(p=>p.id))).filter(g => g.length);
+  const out = [];
+  while(out.length < N_ITEMS && groups.some(g=>g.length)){
+    for(const g of shuffle(groups.slice())){ if(out.length>=N_ITEMS) break; if(g.length) out.push(g.pop()); }
+  }
+  return out.sort((a,b)=>a-b);
+}
+if(!Array.isArray(S.sel) || S.sel.length!==N_ITEMS || !S.sel.every(id=>POOL.some(p=>p.id===id))){
+  S.sel = pickBalanced(); S.a={}; S.d={}; S.n={}; S.i=0; S.fin=null; save();
+}
+const ITEMS = S.sel.map(id => POOL.find(p=>p.id===id));
+
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-function toast(t){ const el=$("#toast"); el.textContent=t; el.classList.add("on"); clearTimeout(toast.t); toast.t=setTimeout(()=>el.classList.remove("on"),1600); }
+function toast(t){ const el=$("#toast"); el.textContent=t; el.classList.add("on"); clearTimeout(toast.t); toast.t=setTimeout(()=>el.classList.remove("on"),1800); }
 const done = () => ITEMS.filter(it => S.a[it.id]).length;
+const isOk = it => it.k.includes(S.a[it.id]);
+const locked = () => !!S.fin;
 
 /* Tema y tamaño de letra */
 try{ const th = localStorage.getItem("clasif-theme"); if(th) document.documentElement.dataset.theme = th; const fs = localStorage.getItem("clasif-fs"); if(fs) document.documentElement.style.setProperty("--fs", fs); }catch(e){}
@@ -279,11 +306,18 @@ $("#nItems").textContent = ITEMS.length;
 $("#alumno").value = S.alumno; $("#grupo").value = S.grupo;
 $("#alumno").oninput = e => { S.alumno = e.target.value; save(); };
 $("#grupo").oninput = e => { S.grupo = e.target.value; save(); };
-if(done()) $("#saveInfo").textContent = `Tienes ${done()} de ${ITEMS.length} artículos clasificados guardados en este navegador.`;
-$("#btnStart").onclick = () => { if(!S.alumno.trim()){ toast("Escribe tu nombre"); $("#alumno").focus(); return; } show("clasificar"); };
+function lockInputs(){ $("#alumno").readOnly = $("#grupo").readOnly = locked(); }
+lockInputs();
+if(locked()) $("#saveInfo").textContent = "Actividad finalizada. Ve a «Corregir y entregar» para ver el resultado y descargar el informe.";
+else if(done()) $("#saveInfo").textContent = `Tienes ${done()} de ${ITEMS.length} artículos clasificados guardados en este navegador.`;
+$("#btnStart").onclick = () => {
+  if(!S.alumno.trim()){ toast("Escribe tu nombre"); $("#alumno").focus(); return; }
+  if(!S.grupo.trim()){ toast("Escribe tu grupo"); $("#grupo").focus(); return; }
+  show(locked() ? "entregar" : "clasificar");
+};
 
 /* Clasificar */
-const meta = it => [["Marca / modelo",it.m],["Descripción",it.d],["Ubicación",it.u],["Stock",it.s]].filter(x=>x[1]!=="").map(x=>`<span><b>${x[0]}</b>${esc(x[1])}</span>`).join("");
+const meta = it => [["Marca / modelo",it.m],["Descripción",it.d],["Stock",it.s]].filter(x=>x[1]!=="").map(x=>`<span><b>${x[0]}</b>${esc(x[1])}</span>`).join("");
 $("#cCats").innerHTML = CATS.map((c,k)=>`<button class="cat" data-k="${k}" aria-pressed="false" title="${esc(c[1])}"><span class="k">${KEYS[k]}</span>${esc(c[0])}</button>`).join("");
 function renderCard(){
   const it = ITEMS[S.i]; if(!it) return;
@@ -293,18 +327,19 @@ function renderCard(){
   const nx = ITEMS[S.i+1]; if(nx){ const pre=new Image(); pre.src=`img/${nx.id}.jpg`; }
   $("#cMeta").innerHTML = meta(it) || '<span class="muted">Sin más datos en el inventario</span>';
   const cur = S.a[it.id];
-  $("#cState").innerHTML = cur ? `<span class="pill ok">${esc(cur)}</span>` : `<span class="pill">Pendiente</span>`;
-  document.querySelectorAll(".cat").forEach(b => b.setAttribute("aria-pressed", CATS[b.dataset.k][0]===cur));
-  $("#cDoubt").checked = !!S.d[it.id];
-  $("#cNote").value = S.n[it.id] || "";
+  $("#cState").innerHTML = locked() ? (isOk(it) ? `<span class="pill ok">✓ Correcto</span>` : `<span class="pill" style="color:var(--ko)">✗ Solución: ${esc(it.k[0])}</span>`)
+    : cur ? `<span class="pill ok">${esc(cur)}</span>` : `<span class="pill">Pendiente</span>`;
+  document.querySelectorAll(".cat").forEach(b => { b.setAttribute("aria-pressed", CATS[b.dataset.k][0]===cur); b.disabled = locked(); });
+  $("#cDoubt").checked = !!S.d[it.id]; $("#cDoubt").disabled = locked();
+  $("#cNote").value = S.n[it.id] || ""; $("#cNote").readOnly = locked();
   $("#cPrev").disabled = S.i===0;
   $("#cNext").textContent = S.i===ITEMS.length-1 ? "Ir a revisar →" : "Siguiente →";
   const n = done(); $("#progTxt").textContent = `${n}/${ITEMS.length}`; $("#progBar").style.width = (100*n/ITEMS.length)+"%";
 }
 function go(dir){
-  if(dir>0 && S.i===ITEMS.length-1){ show("revisar"); return; }
+  if(dir>0 && S.i===ITEMS.length-1){ show(locked() ? "entregar" : "revisar"); return; }
   let j = S.i + dir;
-  if($("#onlyPend").checked){
+  if($("#onlyPend").checked && !locked()){
     let k=j; while(k>=0 && k<ITEMS.length && S.a[ITEMS[k].id]) k+=dir;
     if(k<0 || k>=ITEMS.length){ if(done()===ITEMS.length){ toast("¡No quedan pendientes!"); show("entregar"); return; } k = ITEMS.findIndex(it=>!S.a[it.id]); }
     j=k;
@@ -312,14 +347,15 @@ function go(dir){
   S.i = Math.max(0, Math.min(ITEMS.length-1, j)); save(); renderCard();
 }
 function assign(k){
+  if(locked()) return;
   const it = ITEMS[S.i]; S.a[it.id] = CATS[k][0]; save(); renderCard();
   setTimeout(()=>go(1), 220);
 }
 $("#cCats").onclick = e => { const b = e.target.closest(".cat"); if(b) assign(+b.dataset.k); };
 $("#cPrev").onclick = () => go(-1);
 $("#cNext").onclick = () => go(1);
-$("#cDoubt").onchange = e => { const id = ITEMS[S.i].id; if(e.target.checked) S.d[id]=1; else delete S.d[id]; save(); };
-$("#cNote").oninput = e => { const id = ITEMS[S.i].id; const v = e.target.value; if(v.trim()) S.n[id]=v; else delete S.n[id]; save(); };
+$("#cDoubt").onchange = e => { if(locked()) return; const id = ITEMS[S.i].id; if(e.target.checked) S.d[id]=1; else delete S.d[id]; save(); };
+$("#cNote").oninput = e => { if(locked()) return; const id = ITEMS[S.i].id; const v = e.target.value; if(v.trim()) S.n[id]=v; else delete S.n[id]; save(); };
 document.addEventListener("keydown", e => {
   if($('[data-view="clasificar"]').classList.contains("hidden")) return;
   if(e.target.matches("input,textarea,select") || e.ctrlKey || e.metaKey || e.altKey) return;
@@ -332,19 +368,20 @@ document.addEventListener("keydown", e => {
 $("#fCat").innerHTML = `<option value="">Todas las categorías</option><option value="__pend">Solo pendientes</option><option value="__duda">Solo con dudas</option>` + CATS.map(c=>`<option>${esc(c[0])}</option>`).join("");
 const opts = cur => `<option value="">— Pendiente —</option>` + CATS.map(c=>`<option${c[0]===cur?" selected":""}>${esc(c[0])}</option>`).join("");
 function renderTable(){
-  const q = $("#fText").value.trim().toLowerCase(), fc = $("#fCat").value;
+  const q = $("#fText").value.trim().toLowerCase(), fc = $("#fCat").value, L = locked() ? "disabled" : "";
   const rows = ITEMS.filter(it => {
-    if(q && !(`${it.n} ${it.m} ${it.d} ${it.u} ${it.id}`.toLowerCase().includes(q))) return false;
+    if(q && !(`${it.n} ${it.m} ${it.d} ${it.id}`.toLowerCase().includes(q))) return false;
     if(fc==="__pend") return !S.a[it.id];
     if(fc==="__duda") return !!S.d[it.id];
     if(fc) return S.a[it.id]===fc;
     return true;
   });
-  $("#rBody").innerHTML = rows.map(it => `<tr class="${S.a[it.id]?"":"pend"}"><td class="mono">${it.id}</td><td><img class="thumb" loading="lazy" src="img/${it.id}_t.jpg" data-big="${it.id}" alt="Foto de ${esc(it.n)}"></td><td><b>${esc(it.n)}</b>${S.n[it.id]?`<br><span class="muted" style="font-size:.85rem">Nota: ${esc(S.n[it.id])}</span>`:""}</td><td>${esc([it.m,it.d].filter(Boolean).join(" · "))}${it.u?`<br><span class="muted">${esc(it.u)}</span>`:""}</td><td><select data-id="${it.id}" aria-label="Categoría de ${esc(it.n)} (ID ${it.id})">${opts(S.a[it.id])}</select></td><td><input type="checkbox" data-duda="${it.id}" ${S.d[it.id]?"checked":""} aria-label="Duda en ID ${it.id}"></td></tr>`).join("");
-  $("#rCount").textContent = `${rows.length} artículos mostrados · ${done()} de ${ITEMS.length} clasificados`;
+  $("#rBody").innerHTML = rows.map(it => `<tr class="${S.a[it.id]?"":"pend"}"><td class="mono">${it.id}</td><td><img class="thumb" loading="lazy" src="img/${it.id}_t.jpg" data-big="${it.id}" alt="Foto de ${esc(it.n)}"></td><td><b>${esc(it.n)}</b>${S.n[it.id]?`<br><span class="muted" style="font-size:.85rem">Nota: ${esc(S.n[it.id])}</span>`:""}</td><td>${esc([it.m,it.d].filter(Boolean).join(" · "))}</td><td><select data-id="${it.id}" ${L} aria-label="Categoría de ${esc(it.n)} (ID ${it.id})">${opts(S.a[it.id])}</select></td><td><input type="checkbox" data-duda="${it.id}" ${L} ${S.d[it.id]?"checked":""} aria-label="Duda en ID ${it.id}"></td></tr>`).join("");
+  $("#rCount").textContent = `${rows.length} artículos mostrados · ${done()} de ${ITEMS.length} clasificados` + (locked() ? " · Actividad finalizada" : "");
 }
 $("#fText").oninput = renderTable; $("#fCat").onchange = renderTable;
 $("#rBody").onchange = e => {
+  if(locked()) return;
   if(e.target.dataset.id){ const id=e.target.dataset.id; if(e.target.value) S.a[id]=e.target.value; else delete S.a[id]; e.target.closest("tr").className = e.target.value?"":"pend"; }
   if(e.target.dataset.duda){ const id=e.target.dataset.duda; if(e.target.checked) S.d[id]=1; else delete S.d[id]; }
   save(); $("#rCount").textContent = $("#rCount").textContent.replace(/\d+ de \d+ clasificados/, `${done()} de ${ITEMS.length} clasificados`);
@@ -355,41 +392,82 @@ function openLb(id, name){ $("#lbImg").src = `img/${id}.jpg`; $("#lbImg").alt = 
 $("#lb").onclick = () => $("#lb").classList.add("hidden");
 document.addEventListener("keydown", e => { if(e.key==="Escape") $("#lb").classList.add("hidden"); }, true);
 $("#cPhoto").onclick = () => { const it = ITEMS[S.i]; openLb(it.id, it.n); };
-$("#rBody").onclick = e => { const id = e.target.dataset.big; if(id) openLb(id, ITEMS.find(x=>x.id==id).n); };
+const thumbClick = e => { const id = e.target.dataset.big; if(id) openLb(id, POOL.find(x=>x.id==id).n); };
+$("#rBody").onclick = thumbClick; $("#eBody").onclick = thumbClick;
 
 /* Categorías */
 $("#gloss").innerHTML = CATS.map((c,k)=>`<div class="panel"><h3><span class="mono muted" style="font-size:.85rem">${KEYS[k]}</span> ${esc(c[0])}</h3><p>${esc(c[1])}</p></div>`).join("");
 
-/* Entregar */
+/* Corregir y entregar */
+const aciertos = () => ITEMS.filter(isOk).length;
+const nota = () => Math.round(aciertos()/ITEMS.length*100)/10;
+const fmtNota = () => nota().toLocaleString("es-ES",{minimumFractionDigits:1,maximumFractionDigits:1});
 function renderDeliver(){
-  const n = done(), p = ITEMS.length-n, dudas = Object.keys(S.d).length;
-  $("#eStatus").innerHTML = (p ? `<div class="hint"><b>Te quedan ${p} artículos sin clasificar.</b> Puedes descargar igualmente, pero la entrega debe estar completa. <button class="btn" id="goPend" style="margin-left:6px">Ver pendientes</button></div>` : `<div class="hint" style="background:var(--ok-soft)"><b>Clasificación completa.</b> ${ITEMS.length} artículos.</div>`) +
-    `<p style="margin:8px 0 0">Alumno/a: <b>${esc(S.alumno||"(sin nombre)")}</b> · Grupo: <b>${esc(S.grupo||"—")}</b> · Artículos con duda: <b>${dudas}</b></p>`;
-  const gp = $("#goPend"); if(gp) gp.onclick = () => { $("#fCat").value="__pend"; $("#fText").value=""; show("revisar"); };
-  const cnt = {}; CATS.forEach(c=>cnt[c[0]]=0); ITEMS.forEach(it=>{ if(S.a[it.id]) cnt[S.a[it.id]]++; });
-  $("#eSum").innerHTML = CATS.map(c=>`<div><span>${esc(c[0])}</span><b class="mono">${cnt[c[0]]}</b></div>`).join("");
+  $("#ePre").classList.toggle("hidden", locked());
+  $("#ePost").classList.toggle("hidden", !locked());
+  if(!locked()){
+    const p = ITEMS.length-done();
+    $("#eStatus").innerHTML = (p ? `<div class="hint"><b>Te quedan ${p} artículos sin clasificar.</b> Tienes que clasificarlos todos para poder finalizar. <button class="btn" id="goPend" style="margin-left:6px">Ver pendientes</button></div>` : `<div class="hint" style="background:var(--ok-soft)"><b>Has clasificado los ${ITEMS.length} artículos.</b> Revisa lo que necesites y finaliza.</div>`) +
+      `<p style="margin:8px 0 0">Alumno/a: <b>${esc(S.alumno||"(sin nombre)")}</b> · Grupo: <b>${esc(S.grupo||"—")}</b></p>`;
+    const gp = $("#goPend"); if(gp) gp.onclick = () => { $("#fCat").value="__pend"; $("#fText").value=""; show("revisar"); };
+    $("#btnFinish").disabled = p>0;
+    return;
+  }
+  const ok = aciertos();
+  $("#eScore").innerHTML = `<div><div class="muted" style="font-size:.85rem">NOTA</div><div class="big">${fmtNota()}</div></div><div><b>${ok}</b> aciertos de ${ITEMS.length}<br><span class="muted">${esc(S.alumno)} · ${esc(S.grupo)} · finalizado el ${new Date(S.fin).toLocaleString("es-ES")}</span></div>`;
+  $("#eBody").innerHTML = ITEMS.map(it => { const g = isOk(it), alt = it.k.slice(1); return `<tr class="${g?"":"ko"}"><td class="mono">${it.id}</td><td><img class="thumb" loading="lazy" src="img/${it.id}_t.jpg" data-big="${it.id}" alt="Foto de ${esc(it.n)}"></td><td><b>${esc(it.n)}</b>${it.m?`<br><span class="alt">${esc(it.m)}</span>`:""}</td><td>${esc(S.a[it.id]||"—")}</td><td>${esc(it.k[0])}${alt.length?`<br><span class="alt">También válida: ${esc(alt.join(", "))}</span>`:""}</td><td class="${g?"res-ok":"res-ko"}">${g?"✓ Correcto":"✗ Incorrecto"}</td></tr>`; }).join("");
 }
-function fname(ext){ const s = x => (x||"").normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^\w]+/g,"_").replace(/^_|_$/g,""); return `clasificacion_almacen_${s(S.grupo)||"grupo"}_${s(S.alumno)||"alumno"}.${ext}`; }
-$("#btnCsv").onclick = () => {
-  if(!S.alumno.trim()){ toast("Falta tu nombre (pestaña Inicio)"); show("inicio"); $("#alumno").focus(); return; }
-  const q = v => `"${String(v??"").replace(/"/g,'""')}"`;
-  const lines = [
-    ["Alumno/a",S.alumno],["Grupo",S.grupo],["Fecha",new Date().toLocaleString("es-ES")],["Clasificados",`${done()}/${ITEMS.length}`],[],
-    ["ID","Artículo","Marca-Modelo","Descripción","Ubicación","Stock","Categoría asignada","Duda","Nota"],
-    ...ITEMS.map(it=>[it.id,it.n,it.m,it.d,it.u,it.s,S.a[it.id]||"PENDIENTE",S.d[it.id]?"Sí":"",S.n[it.id]||""])
-  ].map(r=>r.map(q).join(";")).join("\r\n");
-  const blob = new Blob(["﻿"+lines], {type:"text/csv;charset=utf-8"});
-  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = fname("csv"); document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(()=>URL.revokeObjectURL(a.href), 2000); toast("Archivo descargado");
+$("#btnFinish").onclick = () => {
+  if(done()<ITEMS.length){ toast("Faltan artículos por clasificar"); return; }
+  if(!S.alumno.trim() || !S.grupo.trim()){ toast("Falta tu nombre o grupo (pestaña Inicio)"); show("inicio"); return; }
+  if(!confirm("Vas a finalizar. Verás la solución y ya no podrás cambiar tus respuestas. ¿Continuar?")) return;
+  S.fin = Date.now(); save(); lockInputs(); renderDeliver(); window.scrollTo(0,0);
 };
-$("#btnPrint").onclick = () => {
-  $("#printable").innerHTML = `<h2 style="margin:0">Clasificación del almacén · Módulo 1510</h2><p>Alumno/a: <b>${esc(S.alumno)}</b> · Grupo: <b>${esc(S.grupo)}</b> · ${new Date().toLocaleDateString("es-ES")} · Clasificados: ${done()}/${ITEMS.length}</p>
-  <table><thead><tr><th>ID</th><th>Artículo</th><th>Marca-modelo / ubicación</th><th>Categoría</th><th>Duda / nota</th></tr></thead><tbody>${ITEMS.map(it=>`<tr><td>${it.id}</td><td>${esc(it.n)}</td><td>${esc([it.m,it.u].filter(Boolean).join(" · "))}</td><td>${esc(S.a[it.id]||"PENDIENTE")}</td><td>${S.d[it.id]?"Duda. ":""}${esc(S.n[it.id]||"")}</td></tr>`).join("")}</tbody></table>`;
-  window.print();
-};
-$("#btnReset").onclick = () => {
-  if(!confirm("Se borrará toda tu clasificación de este navegador. ¿Seguro?")) return;
-  S = {alumno:S.alumno,grupo:S.grupo,a:{},d:{},n:{},i:0}; save(); renderDeliver(); toast("Clasificación borrada");
+
+/* Informe PDF */
+function fname(){ const s = x => (x||"").normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^\w]+/g,"_").replace(/^_|_$/g,""); return `Clasificacion_almacen_${s(S.grupo)||"grupo"}_${s(S.alumno)||"alumno"}.pdf`; }
+function toDataURL(src){
+  return new Promise(res => { const im = new Image(); im.onload = () => { try{ const c=document.createElement("canvas"); c.width=im.naturalWidth; c.height=im.naturalHeight; c.getContext("2d").drawImage(im,0,0); res({d:c.toDataURL("image/jpeg",0.8), w:im.naturalWidth, h:im.naturalHeight}); }catch(e){ res(null); } }; im.onerror = () => res(null); im.src = src; });
+}
+$("#btnPdf").onclick = async () => {
+  if(!window.jspdf || !window.jspdf.jsPDF){ toast("No se ha podido cargar el generador de PDF. Recarga la página."); return; }
+  const btn = $("#btnPdf"); btn.disabled = true; btn.textContent = "Generando…";
+  try{
+    const imgs = {}; await Promise.all(ITEMS.map(async it => { imgs[it.id] = await toDataURL(`img/${it.id}_t.jpg`); }));
+    const { jsPDF } = window.jspdf; const doc = new jsPDF({unit:"mm", format:"a4"});
+    const W = doc.internal.pageSize.getWidth(), M = 14;
+    doc.setFillColor(31,58,104); doc.rect(0,0,W,24,"F");
+    doc.setTextColor(255); doc.setFont("helvetica","bold"); doc.setFontSize(15); doc.text("Clasificación del almacén por categorías", M, 11);
+    doc.setFont("helvetica","normal"); doc.setFontSize(9); doc.text("Módulo 1510 · Gestión de recursos de emergencias y protección civil · CFGS Coordinación de Emergencias y Protección Civil", M, 18);
+    doc.setTextColor(20,32,51); doc.setFontSize(10);
+    let y = 33;
+    doc.setFont("helvetica","bold"); doc.text("Alumno/a:", M, y); doc.setFont("helvetica","normal"); doc.text(S.alumno, M+20, y);
+    doc.setFont("helvetica","bold"); doc.text("Grupo:", M, y+6); doc.setFont("helvetica","normal"); doc.text(S.grupo, M+20, y+6);
+    doc.setFont("helvetica","bold"); doc.text("Finalizado:", M, y+12); doc.setFont("helvetica","normal"); doc.text(new Date(S.fin).toLocaleString("es-ES"), M+20, y+12);
+    doc.setDrawColor(211,218,228); doc.setFillColor(232,236,242); doc.roundedRect(W-M-58, y-6, 58, 22, 2, 2, "F");
+    doc.setFontSize(8); doc.setTextColor(85,98,117); doc.text("NOTA", W-M-54, y-1);
+    doc.setFontSize(22); doc.setTextColor(20,32,51); doc.setFont("helvetica","bold"); doc.text(fmtNota(), W-M-54, y+9);
+    doc.setFontSize(9); doc.setFont("helvetica","normal"); doc.text(`${aciertos()} / ${ITEMS.length} aciertos`, W-M-30, y+9);
+    doc.autoTable({
+      startY: y+22, margin:{left:M,right:M},
+      head:[["Foto","ID","Artículo","Respuesta del alumno/a","Solución","Resultado"]],
+      body: ITEMS.map(it => ["", String(it.id), it.n + (it.m?`\n${it.m}`:""), (S.a[it.id]||"-") + (S.n[it.id]?`\nNota: ${S.n[it.id]}`:"") + (S.d[it.id]?"\n(marcado con duda)":""), it.k[0] + (it.k.length>1?`\nTambién válida: ${it.k.slice(1).join(", ")}`:""), isOk(it)?"Correcto":"Incorrecto"]),
+      styles:{fontSize:8, cellPadding:1.8, valign:"middle", textColor:[20,32,51], lineColor:[211,218,228], lineWidth:0.1},
+      headStyles:{fillColor:[31,58,104], textColor:255, fontStyle:"bold"},
+      columnStyles:{0:{cellWidth:16, minCellHeight:16}, 1:{cellWidth:10, halign:"center"}, 2:{cellWidth:44}, 3:{cellWidth:42}, 4:{cellWidth:44}, 5:{cellWidth:"auto", fontStyle:"bold"}},
+      didParseCell: d => { if(d.section==="body" && d.column.index===5) d.cell.styles.textColor = d.cell.raw==="Correcto" ? [47,125,79] : [179,38,30]; },
+      didDrawCell: d => {
+        if(d.section!=="body" || d.column.index!==0) return;
+        const im = d.row.raw && imgs[d.row.raw[1]]; if(!im) return;
+        const box = 14, r = Math.min(box/im.w, box/im.h), w = im.w*r, h = im.h*r;
+        doc.addImage(im.d, "JPEG", d.cell.x + (d.cell.width-w)/2, d.cell.y + (d.cell.height-h)/2, w, h);
+      }
+    });
+    const pages = doc.internal.getNumberOfPages();
+    for(let p=1;p<=pages;p++){ doc.setPage(p); doc.setFontSize(8); doc.setTextColor(85,98,117); doc.text(`${S.alumno} · ${S.grupo} · Página ${p} de ${pages}`, M, doc.internal.pageSize.getHeight()-8); }
+    doc.save(fname()); toast("Informe descargado");
+  }catch(e){ console.error(e); toast("Error al generar el PDF"); }
+  btn.disabled = false; btn.textContent = "Descargar informe PDF";
 };
 </script>
 </body>

@@ -2,9 +2,12 @@
 
 App web para el alumnado del Módulo 1510 *Gestión de recursos de emergencias y protección civil* (CFGS Coordinación de Emergencias y Protección Civil, Canarias). Actividad preparatoria del registro de artículos del almacén.
 
-- 121 artículos del inventario (junio 2025) con su foto, a clasificar en 13 categorías.
-- Modo ficha (teclas A–M), tabla de revisión con filtros, glosario de categorías.
-- Guardado automático en el navegador; entrega en .csv (Excel) o impresión/PDF.
-- No requiere registro.
+- A cada alumno se le asignan 30 artículos al azar del inventario (121), repartidos por turnos entre las categorías para que todas las que tienen material estén representadas.
+- Clasificación en 13 categorías: ficha con foto (teclas A–M), tabla de revisión, glosario.
+- «Finalizar y corregir» bloquea las respuestas, muestra la solución y la nota (aciertos/30 × 10) y genera el informe PDF para Moodle.
 
-Sitio estático: `public/index.html` (generado desde `app.html` con los datos del inventario incrustados). Fotos en `public/img/` (`<ID>.jpg` y miniatura `<ID>_t.jpg`).
+Estructura:
+- `app.html`: fuente de la app.
+- `tools/articulos.json`: artículos del inventario. `tools/clave.py`: clave de corrección (categoría correcta y alternativas válidas).
+- `python3 tools/build.py` genera `public/index.html` (sitio estático publicado en Render).
+- `public/img/`: fotos (`<ID>.jpg` y miniatura `<ID>_t.jpg`). `public/vendor/`: jsPDF y jsPDF-AutoTable (MIT).
