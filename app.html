@@ -62,7 +62,7 @@ h3{font-family:var(--f-display);font-weight:600;font-size:1.15rem;margin:0 0 4px
 .muted{color:var(--muted)}
 .progress{display:flex;align-items:center;gap:10px;margin:0 0 14px}
 .bar{flex:1;height:10px;background:var(--sunk);border-radius:5px;overflow:hidden}
-.bar span{display:block;height:100%;background:var(--ok);width:0;transition:width .2s}
+.bar span{display:block;height:100%;background:var(--navy);width:0;transition:width .2s}
 .mono{font-family:var(--f-mono)}
 .card{display:grid;gap:14px}
 .item-head{display:flex;justify-content:space-between;gap:8px;align-items:baseline;flex-wrap:wrap}
@@ -78,8 +78,10 @@ h3{font-family:var(--f-display);font-weight:600;font-size:1.15rem;margin:0 0 4px
 .cat{display:flex;gap:8px;align-items:center;text-align:left;padding:10px 12px;border:1px solid var(--line);background:var(--surface);border-radius:var(--radius);cursor:pointer;min-height:48px}
 .cat:hover{border-color:var(--navy)}
 .cat .k{font-family:var(--f-mono);font-size:.8rem;border:1px solid var(--line);border-radius:4px;padding:1px 6px;color:var(--muted);flex:none}
-.cat[aria-pressed="true"]{background:var(--ok-soft);border-color:var(--ok);font-weight:600}
-.cat[aria-pressed="true"] .k{border-color:var(--ok);color:var(--ok)}
+.cat{background:var(--sunk)}
+.cat[aria-pressed="true"]{background:#FFFFFF;color:#142033;border:2px solid var(--navy);box-shadow:0 0 0 2px color-mix(in srgb, var(--navy) 25%, transparent);font-weight:700}
+.cat[aria-pressed="true"] .k{border-color:var(--navy);color:#142033;background:#FFFFFF}
+.pill.sel{background:#FFFFFF;color:#142033;border:1px solid var(--navy)}
 .nav-row{display:flex;gap:8px;justify-content:space-between;flex-wrap:wrap;align-items:center}
 .btn{border:1px solid var(--line);background:var(--surface);border-radius:var(--radius);padding:8px 14px;cursor:pointer;min-height:40px}
 .btn.primary{background:var(--navy);color:var(--navy-ink);border-color:var(--navy);font-weight:600}
@@ -131,10 +133,10 @@ tr.ko td{background:color-mix(in srgb, var(--ko) 7%, transparent)}
 
 <nav class="tabs" aria-label="Secciones"><div class="row" role="tablist">
   <button role="tab" data-tab="inicio" aria-selected="true">1. Inicio</button>
-  <button role="tab" data-tab="clasificar" aria-selected="false">2. Clasificar</button>
-  <button role="tab" data-tab="revisar" aria-selected="false">3. Revisar</button>
-  <button role="tab" data-tab="categorias" aria-selected="false">Categorías</button>
-  <button role="tab" data-tab="entregar" aria-selected="false">4. Corregir y entregar</button>
+  <button role="tab" data-tab="categorias" aria-selected="false">2. Categorías</button>
+  <button role="tab" data-tab="clasificar" aria-selected="false">3. Clasificar</button>
+  <button role="tab" data-tab="revisar" aria-selected="false">4. Revisar</button>
+  <button role="tab" data-tab="entregar" aria-selected="false">5. Corregir y entregar</button>
 </div></nav>
 
 <main>
@@ -149,15 +151,15 @@ tr.ko td{background:color-mix(in srgb, var(--ko) 7%, transparent)}
       <label class="fld">Grupo<input type="text" id="grupo" placeholder="Ej.: 1.º CEP"></label>
     </div>
     <div class="nav-row"><span class="muted" id="saveInfo">Tu trabajo se guarda en este navegador mientras lo haces.</span>
-      <button class="btn primary" id="btnStart">Empezar a clasificar →</button></div>
+      <button class="btn primary" id="btnStart">Ver las categorías →</button></div>
   </div>
   <div class="panel">
     <h3>Cómo se trabaja</h3>
     <ol style="margin:6px 0 0;padding-left:20px">
+      <li><b>Categorías:</b> lee qué incluye cada una antes de empezar. Puedes volver a consultarla siempre que dudes.</li>
       <li><b>Clasificar:</b> ficha a ficha. Pulsa la categoría o su tecla (A–M). Con ← y → cambias de artículo.</li>
       <li><b>Revisar:</b> tus artículos en una tabla para corregir y comprobar que no queda nada pendiente.</li>
-      <li><b>Categorías:</b> qué incluye cada una. Consúltala siempre que dudes.</li>
-      <li><b>Corregir y entregar:</b> cuando lo tengas todo, pulsa «Finalizar y corregir». Verás la solución de cada artículo y tu nota. A partir de ahí ya no se puede cambiar nada. Descarga el <b>informe PDF</b> y súbelo a la tarea de Moodle.</li>
+      <li><b>Corregir y entregar:</b> pulsa «Finalizar y corregir» cuando termines (o antes, si quieres acabar ya: lo que quede sin responder cuenta como fallo). Verás la solución de cada artículo y tu nota, y ya no se podrá cambiar nada. Descarga el <b>informe PDF</b> y súbelo a la tarea de Moodle.</li>
     </ol>
   </div>
 </section>
@@ -165,7 +167,8 @@ tr.ko td{background:color-mix(in srgb, var(--ko) 7%, transparent)}
 <!-- CLASIFICAR -->
 <section data-view="clasificar" class="hidden">
   <div class="progress"><span class="mono" id="progTxt"></span><div class="bar"><span id="progBar"></span></div>
-    <label class="flag"><input type="checkbox" id="onlyPend"> Saltar a pendientes</label></div>
+    <label class="flag"><input type="checkbox" id="onlyPend"> Saltar a pendientes</label>
+    <button class="btn" id="btnEarly" style="min-height:32px;padding:4px 12px">Finalizar</button></div>
   <div class="panel card split">
     <button class="photo" id="cPhoto" aria-label="Ampliar foto"><img id="cImg" alt=""></button>
     <div class="side">
@@ -207,6 +210,7 @@ tr.ko td{background:color-mix(in srgb, var(--ko) 7%, transparent)}
   <h2>Las 13 categorías</h2>
   <p class="muted" style="margin-top:0">Orientación de lo que entra en cada una. Los ejemplos no son una lista cerrada.</p>
   <div class="gloss" id="gloss"></div>
+  <div class="nav-row" style="margin-top:14px;justify-content:flex-end"><button class="btn primary" id="btnToClass">Empezar a clasificar →</button></div>
 </section>
 
 <!-- CORREGIR Y ENTREGAR -->
@@ -335,8 +339,10 @@ else if(done()) $("#saveInfo").textContent = `Tienes ${done()} de ${ITEMS.length
 $("#btnStart").onclick = () => {
   if(!S.alumno.trim()){ toast("Escribe tu nombre"); $("#alumno").focus(); return; }
   if(!S.grupo.trim()){ toast("Escribe tu grupo"); $("#grupo").focus(); return; }
-  show(locked() ? "entregar" : "clasificar");
+  show(locked() ? "entregar" : "categorias");
 };
+$("#btnToClass").onclick = () => show(locked() ? "entregar" : "clasificar");
+$("#btnEarly").onclick = () => show("entregar");
 
 /* Clasificar */
 const meta = it => [["Marca / modelo",it.m],["Descripción",it.d],["Stock",it.s]].filter(x=>x[1]!=="").map(x=>`<span><b>${x[0]}</b>${esc(x[1])}</span>`).join("");
@@ -350,7 +356,7 @@ function renderCard(){
   $("#cMeta").innerHTML = meta(it) || '<span class="muted">Sin más datos en el inventario</span>';
   const cur = S.a[it.id];
   $("#cState").innerHTML = locked() ? (isOk(it) ? `<span class="pill ok">✓ Correcto</span>` : `<span class="pill" style="color:var(--ko)">✗ Solución: ${esc(it.k[0])}</span>`)
-    : cur ? `<span class="pill ok">${esc(cur)}</span>` : `<span class="pill">Pendiente</span>`;
+    : cur ? `<span class="pill sel">${esc(cur)}</span>` : `<span class="pill">Pendiente</span>`;
   document.querySelectorAll(".cat").forEach(b => { b.setAttribute("aria-pressed", CATS[b.dataset.k][0]===cur); b.disabled = locked(); });
   $("#cDoubt").checked = !!S.d[it.id]; $("#cDoubt").disabled = locked();
   $("#cNote").value = S.n[it.id] || ""; $("#cNote").readOnly = locked();
@@ -429,20 +435,19 @@ function renderDeliver(){
   $("#ePost").classList.toggle("hidden", !locked());
   if(!locked()){
     const p = ITEMS.length-done();
-    $("#eStatus").innerHTML = (p ? `<div class="hint"><b>Te quedan ${p} artículos sin clasificar.</b> Tienes que clasificarlos todos para poder finalizar. <button class="btn" id="goPend" style="margin-left:6px">Ver pendientes</button></div>` : `<div class="hint" style="background:var(--ok-soft)"><b>Has clasificado los ${ITEMS.length} artículos.</b> Revisa lo que necesites y finaliza.</div>`) +
+    $("#eStatus").innerHTML = (p ? `<div class="hint"><b>Te quedan ${p} artículos sin clasificar.</b> Puedes seguir o finalizar ya: los que queden sin responder contarán como incorrectos. <button class="btn" id="goPend" style="margin-left:6px">Ver pendientes</button></div>` : `<div class="hint" style="background:var(--ok-soft)"><b>Has clasificado los ${ITEMS.length} artículos.</b> Revisa lo que necesites y finaliza.</div>`) +
       `<p style="margin:8px 0 0">Alumno/a: <b>${esc(S.alumno||"(sin nombre)")}</b> · Grupo: <b>${esc(S.grupo||"—")}</b></p>`;
     const gp = $("#goPend"); if(gp) gp.onclick = () => { $("#fCat").value="__pend"; $("#fText").value=""; show("revisar"); };
-    $("#btnFinish").disabled = p>0;
     return;
   }
   const ok = aciertos();
-  $("#eScore").innerHTML = `<div><div class="muted" style="font-size:.85rem">NOTA</div><div class="big">${fmtNota()}</div></div><div><b>${ok}</b> aciertos de ${ITEMS.length}<br><span class="muted">${esc(S.alumno)} · ${esc(S.grupo)} · finalizado el ${new Date(S.fin).toLocaleString("es-ES")}</span></div>`;
-  $("#eBody").innerHTML = ITEMS.map(it => { const g = isOk(it), alt = it.k.slice(1); return `<tr class="${g?"":"ko"}"><td class="mono">${it.id}</td><td><img class="thumb" loading="lazy" src="img/${it.id}_t.jpg" data-big="${it.id}" alt="Foto de ${esc(it.n)}"></td><td><b>${esc(it.n)}</b>${it.m?`<br><span class="alt">${esc(it.m)}</span>`:""}</td><td>${esc(S.a[it.id]||"—")}</td><td>${esc(it.k[0])}${alt.length?`<br><span class="alt">También válida: ${esc(alt.join(", "))}</span>`:""}</td><td class="${g?"res-ok":"res-ko"}">${g?"✓ Correcto":"✗ Incorrecto"}</td></tr>`; }).join("");
+  $("#eScore").innerHTML = `<div><div class="muted" style="font-size:.85rem">NOTA</div><div class="big">${fmtNota()}</div></div><div><b>${ok}</b> aciertos de ${ITEMS.length}${ITEMS.length-done()?` · ${ITEMS.length-done()} sin responder`:""}<br><span class="muted">${esc(S.alumno)} · ${esc(S.grupo)} · finalizado el ${new Date(S.fin).toLocaleString("es-ES")}</span></div>`;
+  $("#eBody").innerHTML = ITEMS.map(it => { const g = isOk(it), alt = it.k.slice(1); return `<tr class="${g?"":"ko"}"><td class="mono">${it.id}</td><td><img class="thumb" loading="lazy" src="img/${it.id}_t.jpg" data-big="${it.id}" alt="Foto de ${esc(it.n)}"></td><td><b>${esc(it.n)}</b>${it.m?`<br><span class="alt">${esc(it.m)}</span>`:""}</td><td>${S.a[it.id]?esc(S.a[it.id]):`<i class="muted">Sin responder</i>`}</td><td>${esc(it.k[0])}${alt.length?`<br><span class="alt">También válida: ${esc(alt.join(", "))}</span>`:""}</td><td class="${g?"res-ok":"res-ko"}">${g?"✓ Correcto":S.a[it.id]?"✗ Incorrecto":"✗ Sin responder"}</td></tr>`; }).join("");
 }
 $("#btnFinish").onclick = () => {
-  if(done()<ITEMS.length){ toast("Faltan artículos por clasificar"); return; }
   if(!S.alumno.trim() || !S.grupo.trim()){ toast("Falta tu nombre o grupo (pestaña Inicio)"); show("inicio"); return; }
-  if(!confirm("Vas a finalizar. Verás la solución y ya no podrás cambiar tus respuestas. ¿Continuar?")) return;
+  const p = ITEMS.length-done();
+  if(!confirm((p ? `Te quedan ${p} artículos sin clasificar y contarán como incorrectos.\n\n` : "") + "Vas a finalizar. Verás la solución y ya no podrás cambiar tus respuestas. ¿Continuar?")) return;
   S.fin = Date.now(); save(); lockInputs(); renderDeliver(); window.scrollTo(0,0);
 };
 
@@ -469,11 +474,11 @@ $("#btnPdf").onclick = async () => {
     doc.setDrawColor(211,218,228); doc.setFillColor(232,236,242); doc.roundedRect(W-M-58, y-6, 58, 22, 2, 2, "F");
     doc.setFontSize(8); doc.setTextColor(85,98,117); doc.text("NOTA", W-M-54, y-1);
     doc.setFontSize(22); doc.setTextColor(20,32,51); doc.setFont("helvetica","bold"); doc.text(fmtNota(), W-M-54, y+9);
-    doc.setFontSize(9); doc.setFont("helvetica","normal"); doc.text(`${aciertos()} / ${ITEMS.length} aciertos`, W-M-30, y+9);
+    doc.setFontSize(9); doc.setFont("helvetica","normal"); doc.text(`${aciertos()} / ${ITEMS.length} aciertos`, W-M-32, y+4); if(ITEMS.length-done()){ doc.setFontSize(8); doc.setTextColor(179,38,30); doc.text(`${ITEMS.length-done()} sin responder`, W-M-32, y+9); doc.setTextColor(20,32,51); }
     doc.autoTable({
       startY: y+22, margin:{left:M,right:M},
       head:[["Foto","ID","Artículo","Respuesta del alumno/a","Solución","Resultado"]],
-      body: ITEMS.map(it => ["", String(it.id), it.n + (it.m?`\n${it.m}`:""), (S.a[it.id]||"-") + (S.n[it.id]?`\nNota: ${S.n[it.id]}`:"") + (S.d[it.id]?"\n(marcado con duda)":""), it.k[0] + (it.k.length>1?`\nTambién válida: ${it.k.slice(1).join(", ")}`:""), isOk(it)?"Correcto":"Incorrecto"]),
+      body: ITEMS.map(it => ["", String(it.id), it.n + (it.m?`\n${it.m}`:""), (S.a[it.id]||"Sin responder") + (S.n[it.id]?`\nNota: ${S.n[it.id]}`:"") + (S.d[it.id]?"\n(marcado con duda)":""), it.k[0] + (it.k.length>1?`\nTambién válida: ${it.k.slice(1).join(", ")}`:""), isOk(it)?"Correcto":S.a[it.id]?"Incorrecto":"Sin responder"]),
       styles:{fontSize:8, cellPadding:1.8, valign:"middle", textColor:[20,32,51], lineColor:[211,218,228], lineWidth:0.1},
       headStyles:{fillColor:[31,58,104], textColor:255, fontStyle:"bold"},
       columnStyles:{0:{cellWidth:16, minCellHeight:16}, 1:{cellWidth:10, halign:"center"}, 2:{cellWidth:44}, 3:{cellWidth:42}, 4:{cellWidth:44}, 5:{cellWidth:"auto", fontStyle:"bold"}},
