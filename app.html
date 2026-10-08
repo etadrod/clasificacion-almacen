@@ -178,7 +178,6 @@ tr.ko td{background:color-mix(in srgb, var(--ko) 7%, transparent)}
         <span id="cState"></span>
       </div>
       <p class="item-name" id="cName"></p>
-      <div class="meta" id="cMeta"></div>
       <div class="cats" id="cCats" role="group" aria-label="Categorías"></div>
       <textarea class="note" id="cNote" rows="1" aria-label="Nota opcional" placeholder="Nota opcional: por qué esta categoría o cuál otra dudabas"></textarea>
       <div class="nav-row">
@@ -195,11 +194,11 @@ tr.ko td{background:color-mix(in srgb, var(--ko) 7%, transparent)}
   <div class="panel">
     <h2>Revisar clasificación</h2>
     <div class="filters">
-      <input type="text" id="fText" placeholder="Buscar artículo o modelo" aria-label="Buscar">
+      <input type="text" id="fText" placeholder="Buscar artículo" aria-label="Buscar">
       <select id="fCat" aria-label="Filtrar por categoría"></select>
     </div>
     <div class="tbl-wrap"><table>
-      <thead><tr><th>ID</th><th>Foto</th><th>Artículo</th><th>Marca / modelo</th><th>Categoría</th><th>Duda</th></tr></thead>
+      <thead><tr><th>ID</th><th>Foto</th><th>Artículo</th><th>Categoría</th><th>Duda</th></tr></thead>
       <tbody id="rBody"></tbody>
     </table></div>
     <p class="muted" id="rCount" style="margin:8px 0 0"></p>
@@ -351,7 +350,6 @@ $("#btnToClass").onclick = () => show(locked() ? "entregar" : "clasificar");
 $("#btnEarly").onclick = () => show("entregar");
 
 /* Clasificar */
-const meta = it => [["Marca / modelo",it.m],["Descripción",it.d],["Stock",it.s]].filter(x=>x[1]!=="").map(x=>`<span><b>${x[0]}</b>${esc(x[1])}</span>`).join("");
 $("#cCats").innerHTML = CATS.map((c,k)=>`<button class="cat" data-k="${k}" aria-pressed="false" title="${esc(c[1])}"><span class="k">${KEYS[k]}</span>${esc(c[0])}</button>`).join("");
 function renderCard(){
   const it = ITEMS[S.i]; if(!it) return;
@@ -359,7 +357,6 @@ function renderCard(){
   $("#cName").textContent = it.n;
   $("#cImg").src = `img/${it.id}.jpg`; $("#cImg").alt = `Foto del artículo: ${it.n}`;
   const nx = ITEMS[S.i+1]; if(nx){ const pre=new Image(); pre.src=`img/${nx.id}.jpg`; }
-  $("#cMeta").innerHTML = meta(it);
   const cur = S.a[it.id];
   $("#cState").innerHTML = locked() ? (isOk(it) ? `<span class="pill ok">✓ Correcto</span>` : `<span class="pill" style="color:var(--ko)">✗ Solución: ${esc(it.k[0])}</span>`)
     : cur ? `<span class="pill sel">${esc(cur)}</span>` : `<span class="pill">Pendiente</span>`;
@@ -404,13 +401,13 @@ const opts = cur => `<option value="">— Pendiente —</option>` + CATS.map(c=>
 function renderTable(){
   const q = $("#fText").value.trim().toLowerCase(), fc = $("#fCat").value, L = locked() ? "disabled" : "";
   const rows = ITEMS.filter(it => {
-    if(q && !(`${it.n} ${it.m} ${it.d} ${it.id}`.toLowerCase().includes(q))) return false;
+    if(q && !(`${it.n} ${it.id}`.toLowerCase().includes(q))) return false;
     if(fc==="__pend") return !S.a[it.id];
     if(fc==="__duda") return !!S.d[it.id];
     if(fc) return S.a[it.id]===fc;
     return true;
   });
-  $("#rBody").innerHTML = rows.map(it => `<tr class="${S.a[it.id]?"":"pend"}"><td class="mono">${it.id}</td><td><img class="thumb" loading="lazy" src="img/${it.id}_t.jpg" data-big="${it.id}" alt="Foto de ${esc(it.n)}"></td><td><b>${esc(it.n)}</b>${S.n[it.id]?`<br><span class="muted" style="font-size:.85rem">Nota: ${esc(S.n[it.id])}</span>`:""}</td><td>${esc([it.m,it.d].filter(Boolean).join(" · "))}</td><td><select data-id="${it.id}" ${L} aria-label="Categoría de ${esc(it.n)} (ID ${it.id})">${opts(S.a[it.id])}</select></td><td><input type="checkbox" data-duda="${it.id}" ${L} ${S.d[it.id]?"checked":""} aria-label="Duda en ID ${it.id}"></td></tr>`).join("");
+  $("#rBody").innerHTML = rows.map(it => `<tr class="${S.a[it.id]?"":"pend"}"><td class="mono">${it.id}</td><td><img class="thumb" loading="lazy" src="img/${it.id}_t.jpg" data-big="${it.id}" alt="Foto de ${esc(it.n)}"></td><td><b>${esc(it.n)}</b>${S.n[it.id]?`<br><span class="muted" style="font-size:.85rem">Nota: ${esc(S.n[it.id])}</span>`:""}</td><td><select data-id="${it.id}" ${L} aria-label="Categoría de ${esc(it.n)} (ID ${it.id})">${opts(S.a[it.id])}</select></td><td><input type="checkbox" data-duda="${it.id}" ${L} ${S.d[it.id]?"checked":""} aria-label="Duda en ID ${it.id}"></td></tr>`).join("");
   $("#rCount").textContent = `${rows.length} artículos mostrados · ${done()} de ${ITEMS.length} clasificados` + (locked() ? " · Actividad finalizada" : "");
 }
 $("#fText").oninput = renderTable; $("#fCat").onchange = renderTable;
@@ -448,7 +445,7 @@ function renderDeliver(){
   }
   const ok = aciertos();
   $("#eScore").innerHTML = `<div><div class="muted" style="font-size:.85rem">NOTA</div><div class="big">${fmtNota()}</div></div><div><b>${ok}</b> aciertos de ${ITEMS.length}${ITEMS.length-done()?` · ${ITEMS.length-done()} sin responder`:""}<br><span class="muted">${esc(S.alumno)} · ${esc(S.grupo)} · finalizado el ${new Date(S.fin).toLocaleString("es-ES")}</span></div>`;
-  $("#eBody").innerHTML = ITEMS.map(it => { const g = isOk(it), alt = it.k.slice(1); return `<tr class="${g?"":"ko"}"><td class="mono">${it.id}</td><td><img class="thumb" loading="lazy" src="img/${it.id}_t.jpg" data-big="${it.id}" alt="Foto de ${esc(it.n)}"></td><td><b>${esc(it.n)}</b>${it.m?`<br><span class="alt">${esc(it.m)}</span>`:""}</td><td>${S.a[it.id]?esc(S.a[it.id]):`<i class="muted">Sin responder</i>`}</td><td>${esc(it.k[0])}${alt.length?`<br><span class="alt">También válida: ${esc(alt.join(", "))}</span>`:""}</td><td class="${g?"res-ok":"res-ko"}">${g?"✓ Correcto":S.a[it.id]?"✗ Incorrecto":"✗ Sin responder"}</td></tr>`; }).join("");
+  $("#eBody").innerHTML = ITEMS.map(it => { const g = isOk(it), alt = it.k.slice(1); return `<tr class="${g?"":"ko"}"><td class="mono">${it.id}</td><td><img class="thumb" loading="lazy" src="img/${it.id}_t.jpg" data-big="${it.id}" alt="Foto de ${esc(it.n)}"></td><td><b>${esc(it.n)}</b></td><td>${S.a[it.id]?esc(S.a[it.id]):`<i class="muted">Sin responder</i>`}</td><td>${esc(it.k[0])}${alt.length?`<br><span class="alt">También válida: ${esc(alt.join(", "))}</span>`:""}</td><td class="${g?"res-ok":"res-ko"}">${g?"✓ Correcto":S.a[it.id]?"✗ Incorrecto":"✗ Sin responder"}</td></tr>`; }).join("");
 }
 $("#btnFinish").onclick = () => {
   if(!S.alumno.trim() || !S.grupo.trim()){ toast("Falta tu nombre o grupo (pestaña Inicio)"); show("inicio"); return; }
@@ -484,7 +481,7 @@ $("#btnPdf").onclick = async () => {
     doc.autoTable({
       startY: y+22, margin:{left:M,right:M},
       head:[["Foto","ID","Artículo","Respuesta del alumno/a","Solución","Resultado"]],
-      body: ITEMS.map(it => ["", String(it.id), it.n + (it.m?`\n${it.m}`:""), (S.a[it.id]||"Sin responder") + (S.n[it.id]?`\nNota: ${S.n[it.id]}`:"") + (S.d[it.id]?"\n(marcado con duda)":""), it.k[0] + (it.k.length>1?`\nTambién válida: ${it.k.slice(1).join(", ")}`:""), isOk(it)?"Correcto":S.a[it.id]?"Incorrecto":"Sin responder"]),
+      body: ITEMS.map(it => ["", String(it.id), it.n, (S.a[it.id]||"Sin responder") + (S.n[it.id]?`\nNota: ${S.n[it.id]}`:"") + (S.d[it.id]?"\n(marcado con duda)":""), it.k[0] + (it.k.length>1?`\nTambién válida: ${it.k.slice(1).join(", ")}`:""), isOk(it)?"Correcto":S.a[it.id]?"Incorrecto":"Sin responder"]),
       styles:{fontSize:8, cellPadding:1.8, valign:"middle", textColor:[20,32,51], lineColor:[211,218,228], lineWidth:0.1},
       headStyles:{fillColor:[31,58,104], textColor:255, fontStyle:"bold"},
       columnStyles:{0:{cellWidth:16, minCellHeight:16}, 1:{cellWidth:10, halign:"center"}, 2:{cellWidth:44}, 3:{cellWidth:42}, 4:{cellWidth:44}, 5:{cellWidth:"auto", fontStyle:"bold"}},
