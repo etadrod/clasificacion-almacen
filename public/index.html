@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clasificación del Almacén</title>
+<meta name="description" content="Actividad preparatoria: clasificar los artículos del almacén por categorías (Módulo 1510 Gestión de recursos de emergencias y protección civil).">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+:root{
+  --bg:#F2F4F7; --surface:#FFFFFF; --sunk:#E8ECF2; --ink:#142033; --muted:#556275; --line:#D3DAE4;
+  --navy:#1F3A68; --navy-ink:#FFFFFF; --signal:#C9561A; --signal-soft:#FBE7DA; --ok:#2F7D4F; --ok-soft:#DDEFE3; --ko:#B3261E;
+  --f-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --radius:6px; --fs:1rem;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1520; --surface:#162030; --sunk:#1C283A; --ink:#E5EBF3; --muted:#9BA8BA; --line:#2B384C;
+  --navy:#8EAEE6; --navy-ink:#0E1520; --signal:#F0894A; --signal-soft:#3A2416; --ok:#55B77D; --ok-soft:#183324; --ko:#E5675E; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1520; --surface:#162030; --sunk:#1C283A; --ink:#E5EBF3; --muted:#9BA8BA; --line:#2B384C;
+  --navy:#8EAEE6; --navy-ink:#0E1520; --signal:#F0894A; --signal-soft:#3A2416; --ok:#55B77D; --ok-soft:#183324; --ko:#E5675E; color-scheme:dark}
+*{box-sizing:border-box}
+html{font-size:var(--fs)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);line-height:1.45}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--signal);outline-offset:2px}
+.top{background:var(--navy);color:var(--navy-ink);padding:12px 16px}
+.top .row{max-width:980px;margin:0 auto;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.top h1{font-family:var(--f-display);font-weight:700;font-size:1.5rem;letter-spacing:.02em;margin:0;flex:1;min-width:200px}
+.top small{display:block;font-family:var(--f-body);font-weight:400;font-size:.85rem;opacity:.85;letter-spacing:0}
+.tbtn{background:transparent;border:1px solid currentColor;color:inherit;border-radius:var(--radius);padding:4px 10px;cursor:pointer;font-size:.9rem}
+nav.tabs{background:var(--surface);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+nav.tabs .row{max-width:980px;margin:0 auto;display:flex;overflow-x:auto;padding:0 8px}
+nav.tabs button{background:none;border:0;border-bottom:3px solid transparent;padding:12px 14px;cursor:pointer;font-family:var(--f-display);font-weight:600;font-size:1.1rem;color:var(--muted);white-space:nowrap}
+nav.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--signal)}
+main{max-width:980px;margin:0 auto;padding:16px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px}
+h2{font-family:var(--f-display);font-weight:700;font-size:1.4rem;margin:0 0 8px}
+h3{font-family:var(--f-display);font-weight:600;font-size:1.15rem;margin:0 0 4px}
+.muted{color:var(--muted)}
+.progress{display:flex;align-items:center;gap:10px;margin:0 0 14px}
+.bar{flex:1;height:10px;background:var(--sunk);border-radius:5px;overflow:hidden}
+.bar span{display:block;height:100%;background:var(--ok);width:0;transition:width .2s}
+.mono{font-family:var(--f-mono)}
+.card{display:grid;gap:14px}
+.item-head{display:flex;justify-content:space-between;gap:8px;align-items:baseline;flex-wrap:wrap}
+.photo{display:block;width:100%;background:var(--sunk);border-radius:var(--radius);cursor:zoom-in;border:0;padding:0;overflow:hidden}
+.photo img{display:block;width:100%;height:320px;object-fit:contain}
+.thumb{width:56px;height:56px;object-fit:cover;border-radius:4px;cursor:zoom-in;display:block;background:var(--sunk)}
+.lb{position:fixed;inset:0;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;z-index:20;padding:16px;cursor:zoom-out}
+.lb img{max-width:100%;max-height:100%;object-fit:contain}
+.item-name{font-family:var(--f-display);font-weight:700;font-size:2rem;line-height:1.1;margin:0}
+.meta{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.95rem}
+.meta b{font-weight:600;color:var(--muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.04em;margin-right:4px}
+.cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.cat{display:flex;gap:8px;align-items:center;text-align:left;padding:10px 12px;border:1px solid var(--line);background:var(--surface);border-radius:var(--radius);cursor:pointer;min-height:48px}
+.cat:hover{border-color:var(--navy)}
+.cat .k{font-family:var(--f-mono);font-size:.8rem;border:1px solid var(--line);border-radius:4px;padding:1px 6px;color:var(--muted);flex:none}
+.cat[aria-pressed="true"]{background:var(--ok-soft);border-color:var(--ok);font-weight:600}
+.cat[aria-pressed="true"] .k{border-color:var(--ok);color:var(--ok)}
+.nav-row{display:flex;gap:8px;justify-content:space-between;flex-wrap:wrap;align-items:center}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:var(--radius);padding:8px 14px;cursor:pointer;min-height:40px}
+.btn.primary{background:var(--navy);color:var(--navy-ink);border-color:var(--navy);font-weight:600}
+.btn.warn{color:var(--ko);border-color:var(--ko)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+label.fld{display:grid;gap:4px;font-weight:600;font-size:.9rem}
+input[type=text],select,textarea{border:1px solid var(--line);background:var(--surface);border-radius:var(--radius);padding:8px 10px;width:100%}
+textarea{min-height:60px;resize:vertical}
+.flag{display:flex;gap:6px;align-items:center;font-size:.95rem;cursor:pointer}
+.hint{background:var(--sunk);border-radius:var(--radius);padding:10px 12px;font-size:.92rem}
+.tbl-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.93rem}
+th,td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{font-family:var(--f-display);font-weight:600;font-size:1rem;background:var(--sunk);position:sticky;top:0}
+td select{min-width:170px;padding:5px 6px}
+tr.pend td:first-child{box-shadow:inset 3px 0 var(--signal)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.filters>*{flex:1;min-width:160px}
+.gloss{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.gloss .panel p{margin:4px 0 0;font-size:.93rem}
+.sum{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px;margin:10px 0}
+.sum div{border:1px solid var(--line);border-radius:var(--radius);padding:8px 10px;display:flex;justify-content:space-between}
+.grid2{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.stack{display:grid;gap:14px}
+.pill{font-size:.8rem;padding:2px 8px;border-radius:99px;background:var(--signal-soft);color:var(--signal);font-weight:600}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.hidden{display:none!important}
+.toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:var(--radius);font-size:.9rem;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+#printable{display:none}
+@media (max-width:560px){.photo img{height:240px}.item-name{font-size:1.6rem}.cats{grid-template-columns:1fr 1fr}.cat{font-size:.92rem}}
+@media print{
+  body{background:#fff;color:#000}
+  .top,nav.tabs,main,.toast{display:none!important}
+  #printable{display:block;font-family:var(--f-body);font-size:10pt}
+  #printable table{font-size:9pt} #printable th{background:#eee;position:static}
+}
+</style>
+</head>
+<body>
+<header class="top"><div class="row">
+  <h1>Clasificación del almacén<small>Módulo 1510 · Gestión de recursos de emergencias y protección civil · Actividad preparatoria</small></h1>
+  <button class="tbtn" id="btnFont" title="Aumentar tamaño de letra" aria-label="Cambiar tamaño de letra">A+</button>
+  <button class="tbtn" id="btnTheme" aria-label="Cambiar modo claro u oscuro">◐</button>
+</div></header>
+
+<nav class="tabs" aria-label="Secciones"><div class="row" role="tablist">
+  <button role="tab" data-tab="inicio" aria-selected="true">1. Inicio</button>
+  <button role="tab" data-tab="clasificar" aria-selected="false">2. Clasificar</button>
+  <button role="tab" data-tab="revisar" aria-selected="false">3. Revisar</button>
+  <button role="tab" data-tab="categorias" aria-selected="false">Categorías</button>
+  <button role="tab" data-tab="entregar" aria-selected="false">4. Entregar</button>
+</div></nav>
+
+<main>
+<!-- INICIO -->
+<section data-view="inicio" class="stack">
+  <div class="panel stack">
+    <h2>Antes de empezar</h2>
+    <p style="margin:0">Vas a asignar <b id="nItems"></b> artículos del inventario del almacén a una de las <b>13 categorías</b> de material. Es el paso previo al registro completo de cada artículo: un almacén solo funciona si todo el mundo clasifica igual.</p>
+    <div class="hint"><b>Criterio:</b> clasifica cada artículo por su <b>función principal</b> en una intervención. Si dudas entre dos categorías (por ejemplo, un EPI que solo se usa en una especialidad), elige una, marca «Tengo dudas» y escribe en la nota por qué. Las notas cuentan en la puesta en común.</div>
+    <div class="grid2">
+      <label class="fld">Nombre y apellidos<input type="text" id="alumno" autocomplete="name" placeholder="Escribe tu nombre"></label>
+      <label class="fld">Grupo<input type="text" id="grupo" placeholder="Ej.: 1.º CEP"></label>
+    </div>
+    <div class="nav-row"><span class="muted" id="saveInfo">Tu trabajo se guarda en este navegador mientras lo haces.</span>
+      <button class="btn primary" id="btnStart">Empezar a clasificar →</button></div>
+  </div>
+  <div class="panel">
+    <h3>Cómo se trabaja</h3>
+    <ol style="margin:6px 0 0;padding-left:20px">
+      <li><b>Clasificar:</b> ficha a ficha. Pulsa la categoría o su tecla (A–M). Con ← y → cambias de artículo.</li>
+      <li><b>Revisar:</b> todo el listado en una tabla, con filtros, para corregir y comprobar que no queda nada pendiente.</li>
+      <li><b>Categorías:</b> qué incluye cada una. Consúltala siempre que dudes.</li>
+      <li><b>Entregar:</b> descarga el archivo (.csv, se abre con Excel) y súbelo a la tarea del aula virtual. También puedes imprimirlo o guardarlo en PDF.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- CLASIFICAR -->
+<section data-view="clasificar" class="hidden">
+  <div class="progress"><span class="mono" id="progTxt"></span><div class="bar"><span id="progBar"></span></div>
+    <label class="flag"><input type="checkbox" id="onlyPend"> Saltar a pendientes</label></div>
+  <div class="panel card">
+    <div class="item-head">
+      <span class="mono muted" id="cId"></span>
+      <span id="cState"></span>
+    </div>
+    <button class="photo" id="cPhoto" aria-label="Ampliar foto"><img id="cImg" alt=""></button>
+    <p class="item-name" id="cName"></p>
+    <div class="meta" id="cMeta"></div>
+    <div class="cats" id="cCats" role="group" aria-label="Categorías"></div>
+    <div class="grid2">
+      <label class="flag"><input type="checkbox" id="cDoubt"> Tengo dudas con este artículo</label>
+    </div>
+    <label class="fld">Nota (opcional): por qué esta categoría, o qué otra dudabas<textarea id="cNote" placeholder="Ej.: también podría ser Incendio Urbano porque…"></textarea></label>
+    <div class="nav-row">
+      <button class="btn" id="cPrev">← Anterior</button>
+      <span class="muted" style="font-size:.85rem">Teclas: A–M categoría · ← → moverse</span>
+      <button class="btn primary" id="cNext">Siguiente →</button>
+    </div>
+  </div>
+</section>
+
+<!-- REVISAR -->
+<section data-view="revisar" class="hidden">
+  <div class="panel">
+    <h2>Revisar clasificación</h2>
+    <div class="filters">
+      <input type="text" id="fText" placeholder="Buscar artículo, modelo o ubicación" aria-label="Buscar">
+      <select id="fCat" aria-label="Filtrar por categoría"></select>
+    </div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>ID</th><th>Foto</th><th>Artículo</th><th>Marca / modelo · Ubicación</th><th>Categoría</th><th>Duda</th></tr></thead>
+      <tbody id="rBody"></tbody>
+    </table></div>
+    <p class="muted" id="rCount" style="margin:8px 0 0"></p>
+  </div>
+</section>
+
+<!-- CATEGORÍAS -->
+<section data-view="categorias" class="hidden">
+  <h2>Las 13 categorías</h2>
+  <p class="muted" style="margin-top:0">Orientación de lo que entra en cada una. Los ejemplos no son una lista cerrada.</p>
+  <div class="gloss" id="gloss"></div>
+</section>
+
+<!-- ENTREGAR -->
+<section data-view="entregar" class="hidden stack">
+  <div class="panel stack">
+    <h2>Entregar</h2>
+    <div id="eStatus"></div>
+    <h3>Reparto por categorías</h3>
+    <div class="sum" id="eSum"></div>
+    <div class="nav-row">
+      <button class="btn warn" id="btnReset">Borrar y empezar de cero</button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn" id="btnPrint">Imprimir / PDF</button>
+        <button class="btn primary" id="btnCsv">Descargar (.csv para Excel)</button>
+      </div>
+    </div>
+  </div>
+  <div class="panel">
+    <h3>Autoevaluación antes de entregar</h3>
+    <ul style="margin:6px 0 0;padding-left:20px">
+      <li>¿Has dejado algún artículo sin categoría?</li>
+      <li>¿Has clasificado igual los artículos repetidos (mismo nombre en distintas ubicaciones)?</li>
+      <li>¿Alguna categoría ha quedado vacía o con casi todo? Piensa si es coherente con lo que hay en el almacén.</li>
+      <li>¿Has justificado en la nota los artículos marcados con duda?</li>
+    </ul>
+  </div>
+</section>
+</main>
+
+<div id="printable"></div>
+<div class="lb hidden" id="lb" role="dialog" aria-label="Foto ampliada"><img id="lbImg" alt=""></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const ITEMS = [{"id":1,"n":"Chaleco","d":"","m":"Modelo Único","u":"A.1.1","s":"37","img":1},{"id":2,"n":"Chaleco reversible","d":"","m":"Único","u":"A.1.1","s":"9","img":1},{"id":3,"n":"Chaleco","d":"","m":"Único","u":"A.1.2","s":"2","img":1},{"id":4,"n":"Chaleco","d":"","m":"Único","u":"A.1.2","s":"4","img":1},{"id":5,"n":"Chaleco","d":"","m":"Único","u":"A.1.2","s":"2","img":1},{"id":6,"n":"Chaleco","d":"","m":"Único","u":"A.1.2","s":"2","img":1},{"id":7,"n":"Chaleco","d":"","m":"Único","u":"A.1.2","s":"2","img":1},{"id":8,"n":"Camisetas","d":"","m":"Sin talla","u":"A.1.2","s":"5","img":1},{"id":9,"n":"Botas","d":"","m":"Talla 41","u":"A.1.7","s":"1","img":1},{"id":10,"n":"Botas","d":"","m":"Talla 43","u":"A.1.7","s":"1","img":1},{"id":11,"n":"Botas","d":"","m":"Talla 37","u":"A.1.7","s":"1","img":1},{"id":12,"n":"Pantalón de trabajo","d":"","m":"Talla L","u":"A.1.3","s":"8","img":1},{"id":13,"n":"Cinturón","d":"","m":"Único","u":"A.1.3","s":"8","img":1},{"id":14,"n":"Guantes","d":"","m":"Único","u":"A.1.4","s":"6","img":1},{"id":15,"n":"Linterna","d":"","m":"Único","u":"A.1.4","s":"15","img":1},{"id":16,"n":"Cascos","d":"","m":"Único","u":"A.2.1; A.2.2;A.2.3","s":"23","img":1},{"id":17,"n":"Casco","d":"","m":"Único","u":"A.2.3;A2.4","s":"7","img":1},{"id":18,"n":"Casco","d":"","m":"Único","u":"A.2.4; A.2.5","s":"6","img":1},{"id":19,"n":"Cascos","d":"","m":"Único","u":"A.2.5","s":"1","img":1},{"id":20,"n":"Casco","d":"","m":"Único","u":"A.2.5","s":"2","img":1},{"id":21,"n":"Casco","d":"","m":"Único","u":"A.2.5","s":"3","img":1},{"id":22,"n":"Mochila de extinción","d":"","m":"Único","u":"A.1.5","s":"1","img":1},{"id":23,"n":"Camell back","d":"","m":"Único","u":"A.1.5","s":"1","img":1},{"id":24,"n":"Rastrillo","d":"","m":"Único","u":"Derecha A.1","s":"1","img":1},{"id":25,"n":"Pulaski","d":"","m":"Único","u":"Derecha A.1","s":"2","img":1},{"id":26,"n":"Bellota","d":"","m":"Unico","u":"Derecha A.1","s":"1","img":1},{"id":27,"n":"Gorgui","d":"","m":"Único","u":"Derecha A.1","s":"1","img":1},{"id":28,"n":"Sacho","d":"","m":"Único","u":"Derecha A.1","s":"1","img":1},{"id":29,"n":"Pico","d":"","m":"Único","u":"Derecha A.1","s":"1","img":1},{"id":30,"n":"Traje de bomberos LPGC","d":"","m":"(Sin talla)","u":"A.4","s":"4","img":1},{"id":31,"n":"Traje de bomberos","d":"","m":"Talla L","u":"A.4","s":"9","img":1},{"id":32,"n":"Traje Ciclo","d":"","m":"Talla M","u":"A.5","s":"12","img":1},{"id":33,"n":"Traje","d":"","m":"Talla L","u":"A.5","s":"15","img":1},{"id":34,"n":"Traje","d":"","m":"Único","u":"A.5","s":"6","img":1},{"id":35,"n":"Traje","d":"","m":"Traje ciclo color naranja talla XXL","u":"A.5","s":"4","img":1},{"id":36,"n":"Casco","d":"","m":"Único","u":"A.7.1","s":"3","img":1},{"id":37,"n":"Material de Cuerda","d":"","m":"Único","u":"A.7.1","s":"1","img":1},{"id":38,"n":"Gafas","d":"","m":"Único","u":"A.7.2","s":"17","img":1},{"id":39,"n":"Gafas","d":"","m":"Único","u":"A.7.2","s":"12","img":1},{"id":40,"n":"Caja de oxígeno","d":"","m":"Único","u":"A.7.2","s":"1","img":1},{"id":41,"n":"Viseras","d":"","m":"Único","u":"A.7.2","s":"5","img":1},{"id":42,"n":"Equipo de emergencias","d":"","m":"Único","u":"A.7.4","s":"1","img":1},{"id":43,"n":"Corta papeles","d":"","m":"Único","u":"A.7.4","s":"1","img":1},{"id":44,"n":"Maniquí","d":"","m":"Único","u":"A.7.4","s":"2","img":1},{"id":45,"n":"Manta térmica","d":"","m":"Único","u":"A.7.4","s":"1","img":1},{"id":46,"n":"Desfibrilador","d":"","m":"Único","u":"A.7.4","s":"1","img":1},{"id":47,"n":"Señales","d":"","m":"Único","u":"A.7.4","s":"1","img":1},{"id":48,"n":"Kit para una reanimación","d":"","m":"Único","u":"A.7.4","s":"2","img":1},{"id":49,"n":"Collarín","d":"","m":"Talla P","u":"A.7.3","s":"1","img":1},{"id":50,"n":"Collarín","d":"","m":"Talla S","u":"A.7.3","s":"1","img":1},{"id":51,"n":"Collarín","d":"","m":"Talla XS","u":"A.7.3","s":"1","img":1},{"id":52,"n":"Collarín","d":"","m":"Talla M","u":"A.7.3","s":"1","img":1},{"id":53,"n":"Collarín","d":"","m":"Talla XL","u":"A.7.3","s":"1","img":1},{"id":54,"n":"Collarín","d":"","m":"Talla L","u":"A.7.3","s":"1","img":1},{"id":55,"n":"Material sanitario","d":"","m":"Único","u":"A.7.2","s":"1","img":1},{"id":56,"n":"Pantalla para cascos","d":"","m":"Único","u":"A.7.2","s":"5","img":1},{"id":57,"n":"Cascos integrados","d":"","m":"Único","u":"A.7.2","s":"5","img":1},{"id":58,"n":"Raciones de comida","d":"","m":"Único","u":"A.6.3","s":"2","img":1},{"id":59,"n":"Ración comida ligera","d":"","m":"Único","u":"A.6.3","s":"1","img":1},{"id":60,"n":"Ración comida fría","d":"","m":"Único","u":"A.6.3","s":"2","img":1},{"id":61,"n":"Guantes","d":"","m":"Único","u":"A.6.3","s":"7","img":1},{"id":62,"n":"Comida supervivencia","d":"","m":"Único","u":"A.6.3","s":"2","img":1},{"id":63,"n":"Caja de higiene","d":"","m":"Único","u":"A.6.3","s":"1","img":1},{"id":64,"n":"Gafas","d":"","m":"Único","u":"A.7.2","s":"3","img":1},{"id":65,"n":"Cuerda rescate","d":"","m":"Único","u":"A.7.1","s":"1","img":1},{"id":66,"n":"Material ambulancia","d":"","m":"Único","u":"A.7.4","s":"1","img":1},{"id":67,"n":"Cartel","d":"","m":"Único","u":"Encima de A.7.1","s":"2","img":1},{"id":68,"n":"Epis de un solo uso","d":"","m":"Único","u":"A.6.4","s":"24","img":1},{"id":69,"n":"Cartel","d":"","m":"Único","u":"Encima A.7.1","s":"3","img":1},{"id":70,"n":"Epis blancos","d":"","m":"Único","u":"A.6.3","s":"12","img":1},{"id":71,"n":"Arnés rescate","d":"","m":"Único","u":"A.7.1","s":"1","img":1},{"id":72,"n":"Correa cartuchera","d":"","m":"Único","u":"A.7.2","s":"1","img":1},{"id":73,"n":"Cinta","d":"","m":"Único","u":"Encima de A.7.1","s":"3","img":1},{"id":74,"n":"Uniforme militar","d":"","m":"Único","u":"A.6.5","s":"1","img":1},{"id":75,"n":"Cuerda de estribo","d":"","m":"","u":"Derecha centro dos","s":"4","img":1},{"id":76,"n":"Cintas de escalada","d":"","m":"","u":"Derecha centro dos","s":"6","img":1},{"id":77,"n":"Mosquetones pera","d":"","m":"","u":"Derecha centro dos","s":"12","img":1},{"id":78,"n":"Mosquetones de seguridad","d":"","m":"","u":"","s":"8","img":1},{"id":79,"n":"Eslabones","d":"","m":"","u":"Derecha centro dos","s":"5","img":1},{"id":80,"n":"Anticaidas","d":"","m":"","u":"Derecha centro dos","s":"3","img":1},{"id":81,"n":"Croll","d":"","m":"","u":"Derecha centro dos","s":"4","img":1},{"id":82,"n":"Finchas","d":"","m":"22 Kilo Newton 3 amarillas 2 rojas 2 verdes 1 negra","u":"Derecha centro dos","s":"8","img":1},{"id":83,"n":"Protector de cuerda","d":"","m":"","u":"Derecha centro dos","s":"1","img":1},{"id":84,"n":"Conjunto de anclajes","d":"","m":"","u":"Derecha centro dos","s":"10","img":1},{"id":85,"n":"Rescuender","d":"","m":"","u":"Derecho centro dos","s":"1","img":1},{"id":86,"n":"Mosquetón polea","d":"","m":"","u":"Derecha centro dos","s":"1","img":1},{"id":87,"n":"Arnés","d":"","m":"","u":"Derecha centro dos","s":"1","img":1},{"id":88,"n":"Polea 36 Kilo Newton","d":"","m":"","u":"Derecha centro dos","s":"4","img":1},{"id":89,"n":"Tandem 24 Kilo newton","d":"","m":"","u":"Derecha centro dos","s":"1","img":1},{"id":90,"n":"Puños","d":"","m":"","u":"Derecha centro dos","s":"3","img":1},{"id":91,"n":"ID","d":"","m":"","u":"Derecho centro dos","s":"3","img":1},{"id":92,"n":"Poleas 23 Kilo newton","d":"","m":"","u":"Derecho centra dos","s":"3","img":1},{"id":93,"n":"Descendedor en ocho","d":"","m":"","u":"Derecho centro dos","s":"3","img":1},{"id":94,"n":"Enganche linea de vida","d":"","m":"","u":"Derecha centro dos","s":"1","img":1},{"id":95,"n":"Araña rescate en camilla","d":"","m":"","u":"Derecha centro dos","s":"1","img":1},{"id":96,"n":"Polea doble de rescate","d":"","m":"","u":"Derecha centro dos","s":"1","img":1},{"id":97,"n":"Descendedor","d":"","m":"","u":"Derecha centro dos","s":"1","img":1},{"id":98,"n":"Arnés","d":"","m":"","u":"Derecha centro dos","s":"1","img":1},{"id":99,"n":"Eslinga","d":"","m":"","u":"Derecha centro dos","s":"1","img":1},{"id":100,"n":"Dräger rapid air","d":"","m":"Satandard","u":"5.1","s":"5","img":1},{"id":101,"n":"torno de bancada en acero","d":"","m":"","u":"5.2","s":"1","img":1},{"id":102,"n":"Cerradura de seguridad","d":"","m":"","u":"5.2","s":"1","img":1},{"id":103,"n":"Eslinga con estribos","d":"","m":"Irudek","u":"5.2","s":"1","img":1},{"id":104,"n":"Mesa de Simulación","d":"","m":"","u":"Aula Taller","s":"1","img":1},{"id":105,"n":"Pizarras GOM","d":"","m":"","u":"Aula Taller","s":"4","img":1},{"id":106,"n":"Maniquí","d":"","m":"","u":"Aula Taller","s":"1","img":1},{"id":107,"n":"Maniquí","d":"","m":"","u":"Aula Taller","s":"1","img":1},{"id":108,"n":"ESPEJO INSPECCIÓN CONVEXO","d":"","m":"","u":"Dep","s":"1","img":1},{"id":109,"n":"Escudo antidisturbios","d":"","m":"","u":"Dep","s":"2","img":1},{"id":110,"n":"Chaleco anticorte","d":"","m":"","u":"","s":"8","img":1},{"id":111,"n":"Defensa gomaespuma","d":"Roja","m":"","u":"","s":"5","img":1},{"id":112,"n":"Detector de metales","d":"","m":"","u":"","s":"3","img":1},{"id":113,"n":"Linterna","d":"Negra","m":"","u":"","s":"10","img":1},{"id":114,"n":"Casco antidisturbios","d":"Negro + funda","m":"","u":"","s":"5","img":1},{"id":115,"n":"Defensa semirrígida","d":"Negra","m":"","u":"","s":"15","img":1},{"id":116,"n":"Cinto porta objwtos","d":"Negro","m":"","u":"","s":"15","img":1},{"id":117,"n":"Porta grilletes","d":"Negro","m":"","u":"","s":"15","img":1},{"id":118,"n":"Grilletes","d":"Plateados","m":"","u":"","s":"15","img":1},{"id":119,"n":"Porta Defensa","d":"Negro","m":"","u":"","s":"15","img":1},{"id":120,"n":"Porta Linterna","d":"","m":"","u":"","s":"15","img":1},{"id":121,"n":"Cono de Linterna","d":"Naranja","m":"","u":"","s":"15","img":1}];
+
+const CATS = [
+  ["Accidente de Tráfico","Material específico de siniestros viales: excarcelación (separadores, cizallas, cilindros), estabilización de vehículos, protección de airbags, control de fluidos."],
+  ["EPIs","Equipos que protegen a la persona que interviene: cabeza, ojos y cara, manos, pies, cuerpo, alta visibilidad, protección biológica o química de un solo uso."],
+  ["Extinción de Incendios","Medios para aplicar agentes extintores y apoyo genérico a la extinción: extintores, mangueras, lanzas, bifurcaciones, equipos de respiración autónoma."],
+  ["Herramientas y ferretería","Herramienta y material de uso general no ligado a una especialidad: tornos, llaves, cerraduras, tornillería, cortadores, material de taller."],
+  ["Incendio Forestal","Material propio del ataque en el monte: herramienta manual forestal (pulaski, batefuegos, rastrillo, azada), mochilas extintoras, equipamiento específico de combatiente forestal."],
+  ["Incendio Urbano","Material propio de la intervención en edificios e incendios estructurales: equipamiento de bombero urbano, herramientas de entrada forzada, material específico de interior."],
+  ["Logística","Apoyo y sostenimiento del dispositivo: alimentación y raciones, agua, albergue, higiene colectiva, transporte, almacenaje y material de formación o simulación."],
+  ["Rescate Tierra","Rescate en altura, en pozos o en terreno: cuerdas, arneses, anclajes, mosquetones, poleas, descensores, bloqueadores, camillas y material de trabajos verticales."],
+  ["Rescate Acuático","Rescate en agua: chalecos salvavidas, aros y tubos de rescate, cuerdas flotantes, trajes de agua, aletas."],
+  ["Sanitario","Atención sanitaria y soporte vital: botiquines, desfibriladores, inmovilización (collarines, férulas), material de RCP y maniquíes de prácticas sanitarias."],
+  ["Seguridad","Material de vigilancia y seguridad: detección (detectores de metales, espejos de inspección), defensa y contención, control de accesos y equipamiento policial o de seguridad privada."],
+  ["Señalización","Balizamiento y aviso: conos, cintas de balizar, carteles, señales, luces de señalización y elementos para delimitar zonas."],
+  ["Transmisiones","Comunicaciones: emisoras y walkies, baterías y cargadores de radio, antenas, telefonía, megafonía."]
+];
+const KEYS = "ABCDEFGHIJKLM";
+const STORE = "clasif-almacen-v1";
+
+let S = {alumno:"",grupo:"",a:{},d:{},n:{},i:0};
+try{ const raw = localStorage.getItem(STORE); if(raw) S = Object.assign(S, JSON.parse(raw)); }catch(e){}
+function save(){ try{ localStorage.setItem(STORE, JSON.stringify(S)); }catch(e){} }
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function toast(t){ const el=$("#toast"); el.textContent=t; el.classList.add("on"); clearTimeout(toast.t); toast.t=setTimeout(()=>el.classList.remove("on"),1600); }
+const done = () => ITEMS.filter(it => S.a[it.id]).length;
+
+/* Tema y tamaño de letra */
+try{ const th = localStorage.getItem("clasif-theme"); if(th) document.documentElement.dataset.theme = th; const fs = localStorage.getItem("clasif-fs"); if(fs) document.documentElement.style.setProperty("--fs", fs); }catch(e){}
+$("#btnTheme").onclick = () => {
+  const dark = document.documentElement.dataset.theme ? document.documentElement.dataset.theme==="dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  const nt = dark ? "light" : "dark"; document.documentElement.dataset.theme = nt; try{ localStorage.setItem("clasif-theme", nt); }catch(e){}
+};
+$("#btnFont").onclick = () => {
+  const cur = getComputedStyle(document.documentElement).getPropertyValue("--fs").trim();
+  const nx = cur==="1rem" ? "1.15rem" : cur==="1.15rem" ? "1.3rem" : "1rem";
+  document.documentElement.style.setProperty("--fs", nx); try{ localStorage.setItem("clasif-fs", nx); }catch(e){}
+  toast("Tamaño de letra: " + ({"1rem":"normal","1.15rem":"grande","1.3rem":"muy grande"}[nx]));
+};
+
+/* Pestañas */
+function show(tab){
+  document.querySelectorAll("[data-view]").forEach(v => v.classList.toggle("hidden", v.dataset.view!==tab));
+  document.querySelectorAll("[data-tab]").forEach(b => b.setAttribute("aria-selected", b.dataset.tab===tab));
+  if(tab==="clasificar") renderCard();
+  if(tab==="revisar") renderTable();
+  if(tab==="entregar") renderDeliver();
+  window.scrollTo(0,0);
+}
+document.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => show(b.dataset.tab));
+
+/* Inicio */
+$("#nItems").textContent = ITEMS.length;
+$("#alumno").value = S.alumno; $("#grupo").value = S.grupo;
+$("#alumno").oninput = e => { S.alumno = e.target.value; save(); };
+$("#grupo").oninput = e => { S.grupo = e.target.value; save(); };
+if(done()) $("#saveInfo").textContent = `Tienes ${done()} de ${ITEMS.length} artículos clasificados guardados en este navegador.`;
+$("#btnStart").onclick = () => { if(!S.alumno.trim()){ toast("Escribe tu nombre"); $("#alumno").focus(); return; } show("clasificar"); };
+
+/* Clasificar */
+const meta = it => [["Marca / modelo",it.m],["Descripción",it.d],["Ubicación",it.u],["Stock",it.s]].filter(x=>x[1]!=="").map(x=>`<span><b>${x[0]}</b>${esc(x[1])}</span>`).join("");
+$("#cCats").innerHTML = CATS.map((c,k)=>`<button class="cat" data-k="${k}" aria-pressed="false" title="${esc(c[1])}"><span class="k">${KEYS[k]}</span>${esc(c[0])}</button>`).join("");
+function renderCard(){
+  const it = ITEMS[S.i]; if(!it) return;
+  $("#cId").textContent = `Artículo ${S.i+1} de ${ITEMS.length} · ID ${it.id}`;
+  $("#cName").textContent = it.n;
+  $("#cImg").src = `img/${it.id}.jpg`; $("#cImg").alt = `Foto del artículo: ${it.n}`;
+  const nx = ITEMS[S.i+1]; if(nx){ const pre=new Image(); pre.src=`img/${nx.id}.jpg`; }
+  $("#cMeta").innerHTML = meta(it) || '<span class="muted">Sin más datos en el inventario</span>';
+  const cur = S.a[it.id];
+  $("#cState").innerHTML = cur ? `<span class="pill ok">${esc(cur)}</span>` : `<span class="pill">Pendiente</span>`;
+  document.querySelectorAll(".cat").forEach(b => b.setAttribute("aria-pressed", CATS[b.dataset.k][0]===cur));
+  $("#cDoubt").checked = !!S.d[it.id];
+  $("#cNote").value = S.n[it.id] || "";
+  $("#cPrev").disabled = S.i===0;
+  $("#cNext").textContent = S.i===ITEMS.length-1 ? "Ir a revisar →" : "Siguiente →";
+  const n = done(); $("#progTxt").textContent = `${n}/${ITEMS.length}`; $("#progBar").style.width = (100*n/ITEMS.length)+"%";
+}
+function go(dir){
+  if(dir>0 && S.i===ITEMS.length-1){ show("revisar"); return; }
+  let j = S.i + dir;
+  if($("#onlyPend").checked){
+    let k=j; while(k>=0 && k<ITEMS.length && S.a[ITEMS[k].id]) k+=dir;
+    if(k<0 || k>=ITEMS.length){ if(done()===ITEMS.length){ toast("¡No quedan pendientes!"); show("entregar"); return; } k = ITEMS.findIndex(it=>!S.a[it.id]); }
+    j=k;
+  }
+  S.i = Math.max(0, Math.min(ITEMS.length-1, j)); save(); renderCard();
+}
+function assign(k){
+  const it = ITEMS[S.i]; S.a[it.id] = CATS[k][0]; save(); renderCard();
+  setTimeout(()=>go(1), 220);
+}
+$("#cCats").onclick = e => { const b = e.target.closest(".cat"); if(b) assign(+b.dataset.k); };
+$("#cPrev").onclick = () => go(-1);
+$("#cNext").onclick = () => go(1);
+$("#cDoubt").onchange = e => { const id = ITEMS[S.i].id; if(e.target.checked) S.d[id]=1; else delete S.d[id]; save(); };
+$("#cNote").oninput = e => { const id = ITEMS[S.i].id; const v = e.target.value; if(v.trim()) S.n[id]=v; else delete S.n[id]; save(); };
+document.addEventListener("keydown", e => {
+  if($('[data-view="clasificar"]').classList.contains("hidden")) return;
+  if(e.target.matches("input,textarea,select") || e.ctrlKey || e.metaKey || e.altKey) return;
+  if(e.key==="ArrowRight"){ go(1); e.preventDefault(); }
+  else if(e.key==="ArrowLeft"){ go(-1); e.preventDefault(); }
+  else { const k = KEYS.indexOf(e.key.toUpperCase()); if(k>=0 && e.key.length===1){ assign(k); e.preventDefault(); } }
+});
+
+/* Revisar */
+$("#fCat").innerHTML = `<option value="">Todas las categorías</option><option value="__pend">Solo pendientes</option><option value="__duda">Solo con dudas</option>` + CATS.map(c=>`<option>${esc(c[0])}</option>`).join("");
+const opts = cur => `<option value="">— Pendiente —</option>` + CATS.map(c=>`<option${c[0]===cur?" selected":""}>${esc(c[0])}</option>`).join("");
+function renderTable(){
+  const q = $("#fText").value.trim().toLowerCase(), fc = $("#fCat").value;
+  const rows = ITEMS.filter(it => {
+    if(q && !(`${it.n} ${it.m} ${it.d} ${it.u} ${it.id}`.toLowerCase().includes(q))) return false;
+    if(fc==="__pend") return !S.a[it.id];
+    if(fc==="__duda") return !!S.d[it.id];
+    if(fc) return S.a[it.id]===fc;
+    return true;
+  });
+  $("#rBody").innerHTML = rows.map(it => `<tr class="${S.a[it.id]?"":"pend"}"><td class="mono">${it.id}</td><td><img class="thumb" loading="lazy" src="img/${it.id}_t.jpg" data-big="${it.id}" alt="Foto de ${esc(it.n)}"></td><td><b>${esc(it.n)}</b>${S.n[it.id]?`<br><span class="muted" style="font-size:.85rem">Nota: ${esc(S.n[it.id])}</span>`:""}</td><td>${esc([it.m,it.d].filter(Boolean).join(" · "))}${it.u?`<br><span class="muted">${esc(it.u)}</span>`:""}</td><td><select data-id="${it.id}" aria-label="Categoría de ${esc(it.n)} (ID ${it.id})">${opts(S.a[it.id])}</select></td><td><input type="checkbox" data-duda="${it.id}" ${S.d[it.id]?"checked":""} aria-label="Duda en ID ${it.id}"></td></tr>`).join("");
+  $("#rCount").textContent = `${rows.length} artículos mostrados · ${done()} de ${ITEMS.length} clasificados`;
+}
+$("#fText").oninput = renderTable; $("#fCat").onchange = renderTable;
+$("#rBody").onchange = e => {
+  if(e.target.dataset.id){ const id=e.target.dataset.id; if(e.target.value) S.a[id]=e.target.value; else delete S.a[id]; e.target.closest("tr").className = e.target.value?"":"pend"; }
+  if(e.target.dataset.duda){ const id=e.target.dataset.duda; if(e.target.checked) S.d[id]=1; else delete S.d[id]; }
+  save(); $("#rCount").textContent = $("#rCount").textContent.replace(/\d+ de \d+ clasificados/, `${done()} de ${ITEMS.length} clasificados`);
+};
+
+/* Foto ampliada */
+function openLb(id, name){ $("#lbImg").src = `img/${id}.jpg`; $("#lbImg").alt = `Foto ampliada: ${name}`; $("#lb").classList.remove("hidden"); }
+$("#lb").onclick = () => $("#lb").classList.add("hidden");
+document.addEventListener("keydown", e => { if(e.key==="Escape") $("#lb").classList.add("hidden"); }, true);
+$("#cPhoto").onclick = () => { const it = ITEMS[S.i]; openLb(it.id, it.n); };
+$("#rBody").onclick = e => { const id = e.target.dataset.big; if(id) openLb(id, ITEMS.find(x=>x.id==id).n); };
+
+/* Categorías */
+$("#gloss").innerHTML = CATS.map((c,k)=>`<div class="panel"><h3><span class="mono muted" style="font-size:.85rem">${KEYS[k]}</span> ${esc(c[0])}</h3><p>${esc(c[1])}</p></div>`).join("");
+
+/* Entregar */
+function renderDeliver(){
+  const n = done(), p = ITEMS.length-n, dudas = Object.keys(S.d).length;
+  $("#eStatus").innerHTML = (p ? `<div class="hint"><b>Te quedan ${p} artículos sin clasificar.</b> Puedes descargar igualmente, pero la entrega debe estar completa. <button class="btn" id="goPend" style="margin-left:6px">Ver pendientes</button></div>` : `<div class="hint" style="background:var(--ok-soft)"><b>Clasificación completa.</b> ${ITEMS.length} artículos.</div>`) +
+    `<p style="margin:8px 0 0">Alumno/a: <b>${esc(S.alumno||"(sin nombre)")}</b> · Grupo: <b>${esc(S.grupo||"—")}</b> · Artículos con duda: <b>${dudas}</b></p>`;
+  const gp = $("#goPend"); if(gp) gp.onclick = () => { $("#fCat").value="__pend"; $("#fText").value=""; show("revisar"); };
+  const cnt = {}; CATS.forEach(c=>cnt[c[0]]=0); ITEMS.forEach(it=>{ if(S.a[it.id]) cnt[S.a[it.id]]++; });
+  $("#eSum").innerHTML = CATS.map(c=>`<div><span>${esc(c[0])}</span><b class="mono">${cnt[c[0]]}</b></div>`).join("");
+}
+function fname(ext){ const s = x => (x||"").normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^\w]+/g,"_").replace(/^_|_$/g,""); return `clasificacion_almacen_${s(S.grupo)||"grupo"}_${s(S.alumno)||"alumno"}.${ext}`; }
+$("#btnCsv").onclick = () => {
+  if(!S.alumno.trim()){ toast("Falta tu nombre (pestaña Inicio)"); show("inicio"); $("#alumno").focus(); return; }
+  const q = v => `"${String(v??"").replace(/"/g,'""')}"`;
+  const lines = [
+    ["Alumno/a",S.alumno],["Grupo",S.grupo],["Fecha",new Date().toLocaleString("es-ES")],["Clasificados",`${done()}/${ITEMS.length}`],[],
+    ["ID","Artículo","Marca-Modelo","Descripción","Ubicación","Stock","Categoría asignada","Duda","Nota"],
+    ...ITEMS.map(it=>[it.id,it.n,it.m,it.d,it.u,it.s,S.a[it.id]||"PENDIENTE",S.d[it.id]?"Sí":"",S.n[it.id]||""])
+  ].map(r=>r.map(q).join(";")).join("\r\n");
+  const blob = new Blob(["﻿"+lines], {type:"text/csv;charset=utf-8"});
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = fname("csv"); document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 2000); toast("Archivo descargado");
+};
+$("#btnPrint").onclick = () => {
+  $("#printable").innerHTML = `<h2 style="margin:0">Clasificación del almacén · Módulo 1510</h2><p>Alumno/a: <b>${esc(S.alumno)}</b> · Grupo: <b>${esc(S.grupo)}</b> · ${new Date().toLocaleDateString("es-ES")} · Clasificados: ${done()}/${ITEMS.length}</p>
+  <table><thead><tr><th>ID</th><th>Artículo</th><th>Marca-modelo / ubicación</th><th>Categoría</th><th>Duda / nota</th></tr></thead><tbody>${ITEMS.map(it=>`<tr><td>${it.id}</td><td>${esc(it.n)}</td><td>${esc([it.m,it.u].filter(Boolean).join(" · "))}</td><td>${esc(S.a[it.id]||"PENDIENTE")}</td><td>${S.d[it.id]?"Duda. ":""}${esc(S.n[it.id]||"")}</td></tr>`).join("")}</tbody></table>`;
+  window.print();
+};
+$("#btnReset").onclick = () => {
+  if(!confirm("Se borrará toda tu clasificación de este navegador. ¿Seguro?")) return;
+  S = {alumno:S.alumno,grupo:S.grupo,a:{},d:{},n:{},i:0}; save(); renderDeliver(); toast("Clasificación borrada");
+};
+</script>
+</body>
+</html>
