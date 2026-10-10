@@ -31,6 +31,14 @@ button,input,select,textarea{font:inherit;color:inherit}
 /* Ficha: foto a la izquierda y opciones a la derecha, ajustado al alto de la ventana */
 .side{display:flex;flex-direction:column;gap:10px;min-width:0}
 textarea.note{min-height:38px}
+textarea.note.req{border:2px solid var(--ko);background:color-mix(in srgb, var(--ko) 6%, var(--surface))}
+.dhint{font-size:.88rem;color:var(--ko);font-weight:600;margin:-2px 0 0}
+.res-part{color:#B98A12;font-weight:700}
+tr.part td{background:color-mix(in srgb, #B98A12 9%, transparent)}
+.ro{display:inline-flex;gap:6px;align-items:center;flex-wrap:wrap}
+.tag{font-size:.75rem;font-weight:700;padding:1px 7px;border-radius:99px;border:1px solid var(--line);background:var(--sunk)}
+.tag.d{color:var(--ko);border-color:var(--ko);background:transparent}
+.linkbtn{background:none;border:0;padding:0;color:var(--navy);text-decoration:underline;cursor:pointer;font-size:.85rem}
 @media (min-width:860px){
   main.wide{max-width:1280px}
   section[data-view="clasificar"]:not(.hidden){display:flex;flex-direction:column;height:calc(100dvh - var(--chrome,130px) - 32px);min-height:520px}
@@ -158,8 +166,8 @@ tr.ko td{background:color-mix(in srgb, var(--ko) 7%, transparent)}
     <h3>Cómo se trabaja</h3>
     <ol style="margin:6px 0 0;padding-left:20px">
       <li><b>Categorías:</b> lee qué incluye cada una antes de empezar. Puedes volver a consultarla siempre que dudes.</li>
-      <li><b>Clasificar:</b> ficha a ficha. Pulsa la categoría o su tecla (A–M). Con ← y → cambias de artículo.</li>
-      <li><b>Revisar:</b> tus artículos en una tabla para corregir y comprobar que no queda nada pendiente.</li>
+      <li><b>Clasificar:</b> ficha a ficha. Pulsa la categoría o su tecla (A–M). Con ← y → cambias de artículo. Si marcas «Tengo dudas» puedes elegir hasta <b>dos categorías</b>, pero tendrás que <b>escribir una nota</b> que lo justifique. Con dos categorías, si solo una es válida obtienes medio punto.</li>
+      <li><b>Revisar:</b> tus artículos en una tabla para comprobar que no queda nada pendiente. Los artículos con duda se muestran bloqueados; para cambiarlos vuelve a su ficha.</li>
       <li><b>Corregir y entregar:</b> pulsa «Finalizar y corregir» cuando termines (o antes, si quieres acabar ya: lo que quede sin responder cuenta como fallo). Verás la solución de cada artículo y tu nota, y ya no se podrá cambiar nada. Descarga el <b>informe PDF</b> y súbelo a la tarea de Moodle.</li>
     </ol>
   </div>
@@ -179,6 +187,7 @@ tr.ko td{background:color-mix(in srgb, var(--ko) 7%, transparent)}
       </div>
       <p class="item-name" id="cName"></p>
       <div class="cats" id="cCats" role="group" aria-label="Categorías"></div>
+      <p class="dhint hidden" id="cHint">Duda marcada: puedes elegir hasta dos categorías y la nota es obligatoria.</p>
       <textarea class="note" id="cNote" rows="1" aria-label="Nota opcional" placeholder="Nota opcional: por qué esta categoría o cuál otra dudabas"></textarea>
       <div class="nav-row">
         <button class="btn" id="cPrev">← Anterior</button>
@@ -251,7 +260,7 @@ tr.ko td{background:color-mix(in srgb, var(--ko) 7%, transparent)}
 
 <script>
 const POOL = /*ITEMS*/[];
-const N_ITEMS = 30;
+const N_ITEMS = 50;
 
 const CATS = [
   ["Accidente de Tráfico","Material específico de siniestros viales: excarcelación, sujeción e inmovilización de vehículos."],
@@ -271,7 +280,7 @@ const CATS = [
 const KEYS = "ABCDEFGHIJKLM";
 const STORE = "clasif-almacen-v5";
 
-let S = {alumno:"",grupo:"",sel:null,a:{},d:{},n:{},i:0,fin:null};
+let S = {alumno:"",grupo:"",sel:null,a:{},b:{},d:{},n:{},i:0,fin:null};
 try{ const raw = localStorage.getItem(STORE); if(raw) S = Object.assign(S, JSON.parse(raw)); }catch(e){}
 function save(){ try{ localStorage.setItem(STORE, JSON.stringify(S)); }catch(e){} }
 
@@ -287,7 +296,7 @@ function pickBalanced(){
   return out.sort((a,b)=>a-b);
 }
 if(!Array.isArray(S.sel) || S.sel.length!==N_ITEMS || !S.sel.every(id=>POOL.some(p=>p.id===id))){
-  S.sel = pickBalanced(); S.a={}; S.d={}; S.n={}; S.i=0; S.fin=null; save();
+  S.sel = pickBalanced(); S.a={}; S.b={}; S.d={}; S.n={}; S.i=0; S.fin=null; save();
 }
 const ITEMS = S.sel.map(id => POOL.find(p=>p.id===id));
 
@@ -295,7 +304,13 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 function toast(t){ const el=$("#toast"); el.textContent=t; el.classList.add("on"); clearTimeout(toast.t); toast.t=setTimeout(()=>el.classList.remove("on"),1800); }
 const done = () => ITEMS.filter(it => S.a[it.id]).length;
-const isOk = it => it.k.includes(S.a[it.id]);
+const picks = id => [S.a[id], S.b[id]].filter(Boolean);
+/* Puntuación por artículo: proporción de categorías elegidas que son válidas (1, 0,5 o 0) */
+const pts = it => { const p = picks(it.id); return p.length ? p.filter(c => it.k.includes(c)).length / p.length : 0; };
+const isOk = it => pts(it) === 1;
+const resLabel = it => !picks(it.id).length ? "Sin responder" : pts(it)===1 ? "Correcto" : pts(it)>0 ? "Parcial (½)" : "Incorrecto";
+const fmtN = x => x.toLocaleString("es-ES",{maximumFractionDigits:1});
+const needsNote = it => !!S.d[it.id] && !(S.n[it.id]||"").trim();
 const locked = () => !!S.fin;
 
 /* Tema y tamaño de letra */
@@ -321,7 +336,10 @@ function setChrome(){ document.documentElement.style.setProperty("--chrome", ($(
 addEventListener("resize", setChrome); setChrome();
 
 /* Pestañas */
+let curTab = "inicio";
 function show(tab){
+  if(curTab==="clasificar" && tab!=="clasificar" && !locked() && ITEMS[S.i] && needsNote(ITEMS[S.i])){ toast("Has marcado «Tengo dudas»: escribe la nota antes de salir"); $("#cNote").focus(); return; }
+  curTab = tab;
   $("main").classList.toggle("wide", tab==="clasificar"); setChrome();
   document.querySelectorAll("[data-view]").forEach(v => v.classList.toggle("hidden", v.dataset.view!==tab));
   document.querySelectorAll("[data-tab]").forEach(b => b.setAttribute("aria-selected", b.dataset.tab===tab));
@@ -357,17 +375,21 @@ function renderCard(){
   $("#cName").textContent = it.n;
   $("#cImg").src = `img/${it.id}.jpg`; $("#cImg").alt = `Foto del artículo: ${it.n}`;
   const nx = ITEMS[S.i+1]; if(nx){ const pre=new Image(); pre.src=`img/${nx.id}.jpg`; }
-  const cur = S.a[it.id];
-  $("#cState").innerHTML = locked() ? (isOk(it) ? `<span class="pill ok">✓ Correcto</span>` : `<span class="pill" style="color:var(--ko)">✗ Solución: ${esc(it.k[0])}</span>`)
-    : cur ? `<span class="pill sel">${esc(cur)}</span>` : `<span class="pill">Pendiente</span>`;
-  document.querySelectorAll(".cat").forEach(b => { b.setAttribute("aria-pressed", CATS[b.dataset.k][0]===cur); b.disabled = locked(); });
-  $("#cDoubt").checked = !!S.d[it.id]; $("#cDoubt").disabled = locked();
+  const p = picks(it.id), duda = !!S.d[it.id];
+  $("#cState").innerHTML = locked() ? (isOk(it) ? `<span class="pill ok">✓ Correcto</span>` : pts(it)>0 ? `<span class="pill" style="color:#B98A12">½ Parcial · Solución: ${esc(it.k[0])}</span>` : `<span class="pill" style="color:var(--ko)">✗ Solución: ${esc(it.k[0])}</span>`)
+    : p.length ? `<span class="pill sel">${esc(p.join(" / "))}${duda?" · duda":""}</span>` : `<span class="pill">Pendiente</span>`;
+  document.querySelectorAll(".cat").forEach(b => { b.setAttribute("aria-pressed", p.includes(CATS[b.dataset.k][0])); b.disabled = locked(); });
+  $("#cDoubt").checked = duda; $("#cDoubt").disabled = locked();
+  $("#cHint").classList.toggle("hidden", !duda || locked());
   $("#cNote").value = S.n[it.id] || ""; $("#cNote").readOnly = locked();
+  $("#cNote").placeholder = duda ? "Nota OBLIGATORIA: explica por qué dudas y por qué eliges esta(s) categoría(s)" : "Nota opcional: por qué esta categoría o cuál otra dudabas";
+  $("#cNote").classList.toggle("req", !locked() && needsNote(it));
   $("#cPrev").disabled = S.i===0;
   $("#cNext").textContent = S.i===ITEMS.length-1 ? "Ir a revisar →" : "Siguiente →";
   const n = done(); $("#progTxt").textContent = `${n}/${ITEMS.length}`; $("#progBar").style.width = (100*n/ITEMS.length)+"%";
 }
 function go(dir){
+  if(!locked() && needsNote(ITEMS[S.i])){ toast("Has marcado «Tengo dudas»: escribe la nota antes de continuar"); $("#cNote").focus(); return; }
   if(dir>0 && S.i===ITEMS.length-1){ show(locked() ? "entregar" : "revisar"); return; }
   let j = S.i + dir;
   if($("#onlyPend").checked && !locked()){
@@ -377,19 +399,34 @@ function go(dir){
   }
   S.i = Math.max(0, Math.min(ITEMS.length-1, j)); save(); renderCard();
 }
+function setPicks(id, p){ if(p[0]) S.a[id]=p[0]; else delete S.a[id]; if(p[1]) S.b[id]=p[1]; else delete S.b[id]; }
 function assign(k){
   if(locked()) return;
-  const it = ITEMS[S.i]; S.a[it.id] = CATS[k][0]; save(); renderCard();
+  const it = ITEMS[S.i], c = CATS[k][0];
+  if(S.d[it.id]){
+    let p = picks(it.id);
+    if(p.includes(c)) p = p.filter(x => x!==c);
+    else if(p.length>=2){ toast("Con duda puedes elegir como máximo dos categorías. Quita una pulsándola de nuevo."); return; }
+    else p.push(c);
+    setPicks(it.id, p); save(); renderCard();
+    return;
+  }
+  S.a[it.id] = c; delete S.b[it.id]; save(); renderCard();
   setTimeout(()=>go(1), 220);
 }
 $("#cCats").onclick = e => { const b = e.target.closest(".cat"); if(b) assign(+b.dataset.k); };
 $("#cPrev").onclick = () => go(-1);
 $("#cNext").onclick = () => go(1);
-$("#cDoubt").onchange = e => { if(locked()) return; const id = ITEMS[S.i].id; if(e.target.checked) S.d[id]=1; else delete S.d[id]; save(); };
-$("#cNote").oninput = e => { if(locked()) return; const id = ITEMS[S.i].id; const v = e.target.value; if(v.trim()) S.n[id]=v; else delete S.n[id]; save(); };
+$("#cDoubt").onchange = e => {
+  if(locked()) return; const id = ITEMS[S.i].id;
+  if(e.target.checked){ S.d[id]=1; toast("Puedes elegir hasta dos categorías. Escribe la nota."); }
+  else { delete S.d[id]; delete S.b[id]; }
+  save(); renderCard();
+};
+$("#cNote").oninput = e => { if(locked()) return; const it = ITEMS[S.i]; const v = e.target.value; if(v.trim()) S.n[it.id]=v; else delete S.n[it.id]; save(); e.target.classList.toggle("req", needsNote(it)); };
 document.addEventListener("keydown", e => {
   if($('[data-view="clasificar"]').classList.contains("hidden")) return;
-  if(e.target.matches("input,textarea,select") || e.ctrlKey || e.metaKey || e.altKey) return;
+  if(e.target.matches("input[type=text],textarea,select") || e.ctrlKey || e.metaKey || e.altKey) return;
   if(e.key==="ArrowRight"){ go(1); e.preventDefault(); }
   else if(e.key==="ArrowLeft"){ go(-1); e.preventDefault(); }
   else { const k = KEYS.indexOf(e.key.toUpperCase()); if(k>=0 && e.key.length===1){ assign(k); e.preventDefault(); } }
@@ -404,17 +441,20 @@ function renderTable(){
     if(q && !(`${it.n} ${it.id}`.toLowerCase().includes(q))) return false;
     if(fc==="__pend") return !S.a[it.id];
     if(fc==="__duda") return !!S.d[it.id];
-    if(fc) return S.a[it.id]===fc;
+    if(fc) return picks(it.id).includes(fc);
     return true;
   });
-  $("#rBody").innerHTML = rows.map(it => `<tr class="${S.a[it.id]?"":"pend"}"><td class="mono">${it.id}</td><td><img class="thumb" loading="lazy" src="img/${it.id}_t.jpg" data-big="${it.id}" alt="Foto de ${esc(it.n)}"></td><td><b>${esc(it.n)}</b>${S.n[it.id]?`<br><span class="muted" style="font-size:.85rem">Nota: ${esc(S.n[it.id])}</span>`:""}</td><td><select data-id="${it.id}" ${L} aria-label="Categoría de ${esc(it.n)} (ID ${it.id})">${opts(S.a[it.id])}</select></td><td><input type="checkbox" data-duda="${it.id}" ${L} ${S.d[it.id]?"checked":""} aria-label="Duda en ID ${it.id}"></td></tr>`).join("");
+  $("#rBody").innerHTML = rows.map(it => { const d = !!S.d[it.id], p = picks(it.id);
+    const cat = d ? `<span class="ro" title="Artículo con duda: no se modifica aquí">🔒 ${p.length ? p.map(c=>`<span class="tag">${esc(c)}</span>`).join("") : `<i class="muted">Sin categoría</i>`}</span>`
+                  : `<select data-id="${it.id}" ${L} aria-label="Categoría de ${esc(it.n)} (ID ${it.id})">${opts(S.a[it.id])}</select>`;
+    const note = S.n[it.id] ? `<br><span class="muted" style="font-size:.85rem">Nota: ${esc(S.n[it.id])}</span>` : needsNote(it) ? `<br><span class="dhint">Falta la nota obligatoria</span>` : "";
+    return `<tr class="${p.length?"":"pend"}"><td class="mono">${it.id}</td><td><img class="thumb" loading="lazy" src="img/${it.id}_t.jpg" data-big="${it.id}" alt="Foto de ${esc(it.n)}"></td><td><b>${esc(it.n)}</b>${note}${locked()?"":`<br><button class="linkbtn" data-goto="${ITEMS.indexOf(it)}">Ir a la ficha</button>`}</td><td>${cat}</td><td>${d?`<span class="tag d">Sí</span>`:`<span class="muted">—</span>`}</td></tr>`; }).join("");
   $("#rCount").textContent = `${rows.length} artículos mostrados · ${done()} de ${ITEMS.length} clasificados` + (locked() ? " · Actividad finalizada" : "");
 }
 $("#fText").oninput = renderTable; $("#fCat").onchange = renderTable;
 $("#rBody").onchange = e => {
   if(locked()) return;
   if(e.target.dataset.id){ const id=e.target.dataset.id; if(e.target.value) S.a[id]=e.target.value; else delete S.a[id]; e.target.closest("tr").className = e.target.value?"":"pend"; }
-  if(e.target.dataset.duda){ const id=e.target.dataset.duda; if(e.target.checked) S.d[id]=1; else delete S.d[id]; }
   save(); $("#rCount").textContent = $("#rCount").textContent.replace(/\d+ de \d+ clasificados/, `${done()} de ${ITEMS.length} clasificados`);
 };
 
@@ -424,13 +464,13 @@ $("#lb").onclick = () => $("#lb").classList.add("hidden");
 document.addEventListener("keydown", e => { if(e.key==="Escape") $("#lb").classList.add("hidden"); }, true);
 $("#cPhoto").onclick = () => { const it = ITEMS[S.i]; openLb(it.id, it.n); };
 const thumbClick = e => { const id = e.target.dataset.big; if(id) openLb(id, POOL.find(x=>x.id==id).n); };
-$("#rBody").onclick = thumbClick; $("#eBody").onclick = thumbClick;
+$("#rBody").onclick = e => { const g = e.target.dataset.goto; if(g!==undefined){ S.i = +g; save(); show("clasificar"); return; } thumbClick(e); }; $("#eBody").onclick = thumbClick;
 
 /* Categorías */
 $("#gloss").innerHTML = CATS.map((c,k)=>`<div class="panel"><h3><span class="mono muted" style="font-size:.85rem">${KEYS[k]}</span> ${esc(c[0])}</h3><p>${esc(c[1])}</p></div>`).join("");
 
 /* Corregir y entregar */
-const aciertos = () => ITEMS.filter(isOk).length;
+const aciertos = () => ITEMS.reduce((t,it) => t + pts(it), 0);
 const nota = () => Math.round(aciertos()/ITEMS.length*100)/10;
 const fmtNota = () => nota().toLocaleString("es-ES",{minimumFractionDigits:1,maximumFractionDigits:1});
 function renderDeliver(){
@@ -444,11 +484,13 @@ function renderDeliver(){
     return;
   }
   const ok = aciertos();
-  $("#eScore").innerHTML = `<div><div class="muted" style="font-size:.85rem">NOTA</div><div class="big">${fmtNota()}</div></div><div><b>${ok}</b> aciertos de ${ITEMS.length}${ITEMS.length-done()?` · ${ITEMS.length-done()} sin responder`:""}<br><span class="muted">${esc(S.alumno)} · ${esc(S.grupo)} · finalizado el ${new Date(S.fin).toLocaleString("es-ES")}</span></div>`;
-  $("#eBody").innerHTML = ITEMS.map(it => { const g = isOk(it), alt = it.k.slice(1); return `<tr class="${g?"":"ko"}"><td class="mono">${it.id}</td><td><img class="thumb" loading="lazy" src="img/${it.id}_t.jpg" data-big="${it.id}" alt="Foto de ${esc(it.n)}"></td><td><b>${esc(it.n)}</b></td><td>${S.a[it.id]?esc(S.a[it.id]):`<i class="muted">Sin responder</i>`}</td><td>${esc(it.k[0])}${alt.length?`<br><span class="alt">También válida: ${esc(alt.join(", "))}</span>`:""}</td><td class="${g?"res-ok":"res-ko"}">${g?"✓ Correcto":S.a[it.id]?"✗ Incorrecto":"✗ Sin responder"}</td></tr>`; }).join("");
+  $("#eScore").innerHTML = `<div><div class="muted" style="font-size:.85rem">NOTA</div><div class="big">${fmtNota()}</div></div><div><b>${fmtN(ok)}</b> aciertos de ${ITEMS.length}${ITEMS.length-done()?` · ${ITEMS.length-done()} sin responder`:""}<br><span class="muted">${esc(S.alumno)} · ${esc(S.grupo)} · finalizado el ${new Date(S.fin).toLocaleString("es-ES")}</span></div>`;
+  $("#eBody").innerHTML = ITEMS.map(it => { const g = isOk(it), pr = pts(it), p = picks(it.id), alt = it.k.slice(1); return `<tr class="${g?"":pr>0?"part":"ko"}"><td class="mono">${it.id}</td><td><img class="thumb" loading="lazy" src="img/${it.id}_t.jpg" data-big="${it.id}" alt="Foto de ${esc(it.n)}"></td><td><b>${esc(it.n)}</b></td><td>${p.length?esc(p.join(" / ")):`<i class="muted">Sin responder</i>`}${S.d[it.id]?` <span class="tag d">duda</span>`:""}${S.n[it.id]?`<br><span class="alt">Nota: ${esc(S.n[it.id])}</span>`:""}</td><td>${esc(it.k[0])}${alt.length?`<br><span class="alt">También válida: ${esc(alt.join(", "))}</span>`:""}</td><td class="${g?"res-ok":pr>0?"res-part":"res-ko"}">${g?"✓ ":pr>0?"½ ":"✗ "}${resLabel(it)}</td></tr>`; }).join("");
 }
 $("#btnFinish").onclick = () => {
   if(!S.alumno.trim() || !S.grupo.trim()){ toast("Falta tu nombre o grupo (pestaña Inicio)"); show("inicio"); return; }
+  const sinNota = ITEMS.filter(needsNote);
+  if(sinNota.length){ alert(`Hay ${sinNota.length} artículo(s) marcados con duda sin nota (ID ${sinNota.map(x=>x.id).join(", ")}). Escribe la nota antes de finalizar.`); S.i = ITEMS.indexOf(sinNota[0]); save(); show("clasificar"); return; }
   const p = ITEMS.length-done();
   if(!confirm((p ? `Te quedan ${p} artículos sin clasificar y contarán como incorrectos.\n\n` : "") + "Vas a finalizar. Verás la solución y ya no podrás cambiar tus respuestas. ¿Continuar?")) return;
   S.fin = Date.now(); save(); lockInputs(); renderDeliver(); window.scrollTo(0,0);
@@ -477,15 +519,15 @@ $("#btnPdf").onclick = async () => {
     doc.setDrawColor(211,218,228); doc.setFillColor(232,236,242); doc.roundedRect(W-M-58, y-6, 58, 22, 2, 2, "F");
     doc.setFontSize(8); doc.setTextColor(85,98,117); doc.text("NOTA", W-M-54, y-1);
     doc.setFontSize(22); doc.setTextColor(20,32,51); doc.setFont("helvetica","bold"); doc.text(fmtNota(), W-M-54, y+9);
-    doc.setFontSize(9); doc.setFont("helvetica","normal"); doc.text(`${aciertos()} / ${ITEMS.length} aciertos`, W-M-32, y+4); if(ITEMS.length-done()){ doc.setFontSize(8); doc.setTextColor(179,38,30); doc.text(`${ITEMS.length-done()} sin responder`, W-M-32, y+9); doc.setTextColor(20,32,51); }
+    doc.setFontSize(9); doc.setFont("helvetica","normal"); doc.text(`${fmtN(aciertos())} / ${ITEMS.length} aciertos`, W-M-32, y+4); if(ITEMS.length-done()){ doc.setFontSize(8); doc.setTextColor(179,38,30); doc.text(`${ITEMS.length-done()} sin responder`, W-M-32, y+9); doc.setTextColor(20,32,51); }
     doc.autoTable({
       startY: y+22, margin:{left:M,right:M},
       head:[["Foto","ID","Artículo","Respuesta del alumno/a","Solución","Resultado"]],
-      body: ITEMS.map(it => ["", String(it.id), it.n, (S.a[it.id]||"Sin responder") + (S.n[it.id]?`\nNota: ${S.n[it.id]}`:"") + (S.d[it.id]?"\n(marcado con duda)":""), it.k[0] + (it.k.length>1?`\nTambién válida: ${it.k.slice(1).join(", ")}`:""), isOk(it)?"Correcto":S.a[it.id]?"Incorrecto":"Sin responder"]),
+      body: ITEMS.map(it => ["", String(it.id), it.n, (picks(it.id).join(" / ")||"Sin responder") + (S.d[it.id]?"\n(marcado con duda)":"") + (S.n[it.id]?`\nNota: ${S.n[it.id]}`:""), it.k[0] + (it.k.length>1?`\nTambién válida: ${it.k.slice(1).join(", ")}`:""), resLabel(it)]),
       styles:{fontSize:8, cellPadding:1.8, valign:"middle", textColor:[20,32,51], lineColor:[211,218,228], lineWidth:0.1},
       headStyles:{fillColor:[31,58,104], textColor:255, fontStyle:"bold"},
       columnStyles:{0:{cellWidth:16, minCellHeight:16}, 1:{cellWidth:10, halign:"center"}, 2:{cellWidth:44}, 3:{cellWidth:42}, 4:{cellWidth:44}, 5:{cellWidth:"auto", fontStyle:"bold"}},
-      didParseCell: d => { if(d.section==="body" && d.column.index===5) d.cell.styles.textColor = d.cell.raw==="Correcto" ? [47,125,79] : [179,38,30]; },
+      didParseCell: d => { if(d.section==="body" && d.column.index===5) d.cell.styles.textColor = d.cell.raw==="Correcto" ? [47,125,79] : d.cell.raw==="Parcial (½)" ? [185,138,18] : [179,38,30]; },
       didDrawCell: d => {
         if(d.section!=="body" || d.column.index!==0) return;
         const im = d.row.raw && imgs[d.row.raw[1]]; if(!im) return;
